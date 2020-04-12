@@ -1,0 +1,695 @@
+import groovy.io.FileType
+import groovy.text.Template
+import org.apache.tools.ant.taskdefs.condition.Os
+
+repositories {
+    mavenLocal()
+    jcenter()
+}
+
+buildscript {
+    repositories {
+        mavenLocal()
+        jcenter()
+    }
+    dependencies {
+        classpath("net.serenity-bdd:serenity-gradle-plugin:1.1.41")     
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'net.serenity-bdd.aggregator'
+//apply plugin: "eu.leontebbens.gradle.chromedriver-updater"
+
+dependencies {
+	//JSON Dependencies
+	compile 'com.jayway.jsonpath:json-path:2.2.0'
+	compile group: 'com.google.code.gson', name: 'gson', version: '2.7'
+	compile "org.codehaus.groovy:groovy-all:2.4.7"
+
+	//Serenity Dependencies
+	testCompile 'net.serenity-bdd:serenity-rest-assured:1.1.41'
+	testCompile 'net.serenity-bdd:serenity-junit:1.1.41'
+	testCompile 'net.serenity-bdd:serenity-core:1.1.41'
+	testCompile 'net.serenity-bdd:serenity-cucumber:1.1.10'
+	testCompile 'de.codecentric:jbehave-junit-runner:1.1.0'
+	
+}
+
+
+class TestExecutionListener implements org.gradle.api.tasks.testing.TestListener
+{
+	private int indentation = 0;
+	private File logFile = null;
+	private Set<File> cucumberTestSuites = new ArrayList<String>();
+	public TestExecutionListener(File logFile, Set<File> cucumberTestSuites){
+		this.logFile = logFile;
+		this.cucumberTestSuites = cucumberTestSuites;
+	}
+	public void beforeSuite(TestDescriptor suite) {
+		recordAndOutput('beforeSuite: '+printTestDescriptor(suite));
+		indentation++;
+	}
+
+	public void afterSuite(TestDescriptor suite, TestResult result) {
+		indentation--;
+		recordAndOutput('afterSuite: '+printTestDescriptor(suite)+","+printTestResult(result));
+	}
+
+	public void beforeTest(TestDescriptor test) {
+		recordAndOutput 'beforeTest: '+printTestDescriptor(test);
+		indentation++;
+	}
+
+	public void afterTest(TestDescriptor test, TestResult result) {
+		indentation--;
+		recordAndOutput 'afterTest: '+printTestDescriptor(test)+','+printTestResult(result);
+	}
+
+	private boolean isCucumberTestSuite(TestDescriptor descriptor){
+		if(descriptor == null){
+			return false;
+		}
+		if(descriptor.getClassName() == null){
+			return false;
+		}
+		for(File testSuite : cucumberTestSuites){
+			if(descriptor.getClassName().contains(org.apache.commons.io.FilenameUtils.getBaseName(testSuite.getName())))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private String printTestDescriptor(TestDescriptor descriptor){
+		String out = "";
+
+		if(isCucumberTestSuite(descriptor.getParent())){
+			out += "(CucumberScenario)";
+		}
+		out += "Descriptor: "+descriptor.getName()+","+descriptor.getClassName();
+		return out;
+	}
+
+	private String printTestResult(TestResult result){
+		String out = "Test Results: ";
+		out += "Failed:"+result.getFailedTestCount()+", ";
+		out += "Skipped:"+result.getSkippedTestCount()+", ";
+		out += "Passed:"+result.getSuccessfulTestCount()+", ";
+		out += "Result:"+result.getResultType()+", ";
+		if(result.getException() != null){
+			List<Throwable> exceptionsToBePrinted = new ArrayList<Throwable>();
+			Throwable exception = result.getException();
+			exceptionsToBePrinted.add(exception);
+			if(exception instanceof org.junit.runners.model.InitializationError){
+				exceptionsToBePrinted.addAll(((org.junit.runners.model.InitializationError)exception).getCauses());
+			}
+			out += "Exceptions:"+exceptionsToBePrinted+":";
+			for(Throwable t : exceptionsToBePrinted){
+				out += ""+t+"\n";
+				for(StackTraceElement elem : t.getStackTrace()){
+					out += "\n"+elem+"";
+				}
+			}
+		}
+		return out;
+	}
+
+	private void recordAndOutput(String msg) {
+		try{
+			String out = "\t".multiply(indentation)+'GRADLE: TestExecutionListener:  '+msg+"\n";
+			logFile << out;
+		}
+		catch(Exception e){
+			println e;
+		}
+	}
+}
+
+test{
+	def fileMap = new TreeMap<String, File>();
+	def redirectionMap = new TreeMap<String, String>();
+	def blacklist = new ArrayList<String>();
+	blacklist.add("net.thucydides.core.reflection.StackTraceAnalyser");
+
+
+	onOutput { descriptor, event ->
+		//check if message is blacklisted
+		def messageBlacklisted = false;
+		for(String blacklistedString : blacklist) {
+			if(event.message.contains(blacklistedString)){
+				messageBlacklisted=true;
+			}
+		}
+
+		//split message on newlines
+		String[] messageSegments = event.message.split("[\r\n]+");
+
+		//Get reference to 'Gradle Test Executor #'
+		def executor = descriptor;
+		while(executor.getParent() != null)
+		{
+			def result = executor.getName() =~ /Gradle Test Executor \d+$/;
+			if(result.size() >= 1)
+			{
+				break;
+			}
+			executor = executor.getParent();
+		}
+
+		//Push on to the redirection stack
+		def originalKey = executor.getName();
+		def key = originalKey;
+		def redirectionMessages = [/TEST STARTED: (.*)$/];
+		for(def regex : redirectionMessages)
+		{
+			for(def messageSegment : messageSegments){
+				def result = (messageSegment =~ regex);
+				if(result.size()>=1)
+				{
+					def redirectedLocation = result[0][1];
+					redirectionMap.put(key, redirectedLocation);
+					logger.lifecycle("Redirecting "+key+"->"+redirectedLocation);
+				}
+			}
+		}
+
+		//Traverse redirection stack
+		def depth = 0;
+		def oldKey = null;
+		while(redirectionMap.containsKey(key) && depth < 10)
+		{
+			depth+1;
+			oldKey = key;
+			key = redirectionMap.get(key);
+		}
+
+		//Pop from redirection stack
+		def stopRedirectionMessages = [/net.thucydides.core.reports.ReportService/];
+		if(oldKey != null){
+			for(def regex : stopRedirectionMessages)
+			{
+				for(def messageSegment : messageSegments){
+					def result = (messageSegment =~ regex);
+					if(result.size()>=1)
+					{
+						redirectionMap.remove(oldKey);
+						logger.lifecycle("Stopping Redirecting from "+oldKey+"->"+key);
+					}
+				}
+			}
+		}
+
+
+		//key is still gradle test executor, may as well use something more useful
+		if(key.equals(originalKey))
+		{
+			key = descriptor.getClassName();
+		}
+
+		//output the message if it's not blacklisted
+		def streamName = key.replaceAll("[^a-zA-Z0-9\\._]+", "_");
+		if(!messageBlacklisted) {
+			if(!fileMap.containsKey(streamName)) {
+				def outputFile = createSerenityLogFile(streamName+".txt");
+				fileMap.put(streamName, outputFile);
+			}
+			def resultingMessage = preprocessOutput(messageSegments)
+			fileMap.get(streamName) << resultingMessage;
+		}
+	}
+}
+
+public String preprocessOutput(String[] messageSegments)
+{
+    java.text.DateFormat dateFormat = new java.text.SimpleDateFormat("yyyy-M-dd HH:mm:ss,SSS Z");
+    String timestamp = dateFormat.format(new java.util.Date());
+    if(messageSegments.length != 0){
+        messageSegments[0] = timestamp + "\t"+messageSegments[0];
+    }
+    Collection<String> transformedSegments = messageSegments.collect{line->
+        line+"\n";
+    };
+    String resultingMessage = transformedSegments.iterator().join("");
+    return resultingMessage;
+}
+
+public File getSerenityLogFile(String fileName){
+	def logFolder = new File(new File(project.rootDir, project.serenity.outputDirectory), "logs");
+	createDirectory(logFolder);
+	def outputFile = new File(logFolder, fileName);
+	return outputFile;
+}
+
+public File createSerenityLogFile(String fileName){
+	def outputFile = getSerenityLogFile(fileName);
+	deleteFile(outputFile);
+	createFile(outputFile);
+	return outputFile;
+}
+
+
+tasks.test.doFirst {
+	gradle.addListener(new TestExecutionListener(createSerenityLogFile("executedTests.log"), getGeneratedCucumberRunners(buildFile.getParentFile())));
+	logging.captureStandardOutput LogLevel.INFO
+	logger.lifecycle("Transfering gradle properties to system properties...");
+
+	systemProperty 'cucumber.options', System.getProperty('cucumber.options', '')
+	if(project.hasProperty("ignoreTestFailures"))
+	{
+		def testsAreIgnored = project.getProperty("ignoreTestFailures").toBoolean();
+		if(testsAreIgnored){
+			System.err.println("***********************************");
+			System.err.println("*     IGNORNING TEST FAILURES     *");
+			System.err.println("*  VERY IMPORTANT: This flag      *");
+			System.err.println("*  should only be used to run     *");
+			System.err.println("*       non-blocking tests!       *");
+			System.err.println("***********************************");
+			ignoreFailures = true;
+		}
+	}
+	if(project.hasProperty("firefox.profile.path"))
+		systemProperty 'firefox.profile.path', project.getProperty('firefox.profile.path')
+	if(project.hasProperty("ftWebHost")){
+		systemProperty "restassured.base.url", project.getProperty("ftWebHost")
+	}
+	//This will set the webdriver url and the restAssured url
+	systemProperty "restassured.base.url", "${ftWebHost}"
+	setSystemProperty "webdriver.base.url", "http://${ftWebHost}"
+	systemProperty "jmsBrokerURL", "tcp://${ftWebHost}:61616"
+	
+	if (project.hasProperty("apiDebugOutput")) {
+		systemProperty "debug.api.testing", "${apiDebugOutput}"
+	}
+
+	if(project.hasProperty("ftWebPort")){
+		systemProperty "restassured.base.port", "${ftWebPort}"
+	}
+
+	if(project.hasProperty("ftWebSecure")){
+		systemProperty "restassured.secure.connection", "${ftWebSecure}"
+	}
+
+	if(project.hasProperty("receiptNumber")){
+		systemProperty "receiptNumber", "${receiptNumber}"
+	}
+
+	if(project.hasProperty("proxyEnv")){
+		if("${proxyEnv}" == "true"){
+			systemProperty "proxyEnv", "${proxyEnv}"
+			setSystemProperty "proxyEnv", "${proxyEnv}"
+
+			systemProperty "hostProxy", "${hostProxy}"
+			setSystemProperty "hostProxy", "${hostProxy}"
+
+			systemProperty "portProxy", "${portProxy}"
+			setSystemProperty "portProxy", "${portProxy}"
+		}
+	}
+
+	if(project.hasProperty("paygovURL"))
+		setSystemProperty "paygov.paygov.url", "${paygovURL}"
+		systemProperty "paygov.paygov.url", "${paygovURL}"
+
+	if(project.hasProperty("formI90FTHost") && project.hasProperty("internalAppFTHost")) {
+		setSystemProperty "external.host", "${formI90FTHost}"
+		systemProperty "external.host", "${formI90FTHost}"
+		setSystemProperty "internal.host", "${internalAppFTHost}"
+		systemProperty "internal.host", "${internalAppFTHost}"
+	}
+	if(project.hasProperty("ftWebPort") && project.hasProperty("formI90FTHost") && project.hasProperty("internalAppFTHost")) {
+		setSystemProperty "external.host", "${formI90FTHost}:${ftWebPort}"
+		systemProperty "external.host", "${formI90FTHost}:${ftWebPort}"
+		setSystemProperty "internal.host", "${internalAppFTHost}:${ftWebPort}"
+		systemProperty "internal.host", "${internalAppFTHost}:${ftWebPort}"
+	}
+
+	if(!System.properties["chrome.switches"]){
+		setSystemProperty("chrome.switches", "disable-extensions");
+		systemProperty "chrome.switches","disable-extensions"
+	}
+	else{
+		systemProperty "chrome.switches", project.getProperty('chrome.switches');
+	}
+
+	if(project.hasProperty("externalAppHost")){
+		setSystemProperty("externalAppHost", "http://${externalAppHost}")
+		systemProperty "externalAppHost", "http://${externalAppHost}"
+	} else {
+		setSystemProperty("externalAppHost", "http://${ftWebHost}")
+		systemProperty "externalAppHost", "http://${ftWebHost}"
+	}
+	if(project.hasProperty("databaseDriverClassName")){
+		systemProperty "database.driverClassName", "${databaseDriverClassName}"
+	}
+	if(project.hasProperty("databaseServer")){
+		systemProperty "database.host", "${databaseServer}"
+	}
+	if(project.hasProperty("databasePort")){
+		systemProperty "database.port", "${databasePort}"
+	}
+	if(project.hasProperty("databaseServiceName")){
+		systemProperty "database.sid", "${databaseServiceName}"
+	}
+	if(project.hasProperty("databaseElis2DataUser")){
+		systemProperty "database.username", "${databaseElis2DataUser}${branchName}"
+	}
+	if(project.hasProperty("databaseElis2DataPasswd")){
+		systemProperty "database.password", "${databaseElis2DataPasswd}"
+	}
+
+	if(project.hasProperty("env")){
+		setSystemProperty("env", "${env}");
+		systemProperty "env", "${env}";
+	} else {
+		setSystemProperty("env", "LOCAL");
+		systemProperty "env", "LOCAL";
+	}
+	
+	if(Os.isFamily(Os.FAMILY_MAC)){
+		println "*** MAC ***";
+		println "*** Using ChromeDriver under source control *** "
+		systemProperty 'webdriver.chrome.driver' , 'src/test/resources/chromedriver/chromedriver';
+	}
+
+	println "Overriding serenity properties for child jvms based on system properties (takes precedence over serenity.properties)..."
+	net.thucydides.core.util.SystemEnvironmentVariables environmentVariables = new net.thucydides.core.util.SystemEnvironmentVariables();
+	Map<String, net.thucydides.core.ThucydidesSystemProperty> propertyNameMap = new TreeMap<String, net.thucydides.core.ThucydidesSystemProperty>();
+
+
+	for(net.thucydides.core.ThucydidesSystemProperty property : net.thucydides.core.ThucydidesSystemProperty.values()) {
+		String key = property.getPropertyName().replaceAll("thucydides.","serenity.");//withSerenityPrefix() method
+		propertyNameMap.put(key, property);
+	}
+
+	
+	
+	for(String key : propertyNameMap.keySet()){
+		net.thucydides.core.ThucydidesSystemProperty property = propertyNameMap.get(key);
+		if(property.isDefinedIn(environmentVariables)) {
+			String value = property.from(environmentVariables);
+			println "(O)${key}=${value}"
+			systemProperty key, value
+		}
+		else {
+			println "( )${key}"
+		}
+	}
+
+	if(project.hasProperty("maxParallelForks")) {
+		int forks = project.getProperty("maxParallelForks") as int;
+		println "Running up to ${forks} test suite(s) in parallel";
+		maxParallelForks = forks;
+	}
+
+	if(project.hasProperty("test.maxRerunCount")){
+		int maxRerunTimes = project.getProperty('test.maxRerunCount') as int;
+		systemProperty 'test.maxRerunCount', maxRerunTimes;
+		println "Running failing tests up to ${maxRerunTimes} time(s)";
+	}
+	
+	if(project.hasProperty("test.randomOrder")){
+		boolean randomOrder = project.getProperty('test.randomOrder') as boolean;
+		systemProperty 'test.randomOrder', randomOrder;
+		if(randomOrder){
+			println("Running tests in a random order");
+		}
+	}
+}
+
+public void setSystemProperty(String key, String value){
+	System.setProperty(key, value);
+	println "Set system property "+key+"="+value;
+}
+
+task ensureNoTestFailures(dependsOn: 'compileTestJava', type:JavaExec){
+	doFirst{
+		logging.captureStandardOutput LogLevel.INFO
+		println "Ensuring no tests failed"
+		classpath = sourceSets.main.output + sourceSets.test.output + sourceSets.main.runtimeClasspath + sourceSets.test.runtimeClasspath
+		main = 'gov.dhs.tsa.tas.serenity.framework.EnsureNoTestFailures'
+		args = [new File(project.rootDir, project.serenity.outputDirectory).getCanonicalPath()];
+	}
+}
+
+task cucumberMonkey(dependsOn: 'compileTestJava', type:JavaExec){
+	doFirst{
+		logging.captureStandardOutput LogLevel.INFO
+		println("Executing cucumber monkey");
+		classpath = sourceSets.main.output + sourceSets.test.output + sourceSets.main.runtimeClasspath + sourceSets.test.runtimeClasspath
+		main = 'gov.dhs.tsa.tas.serenity.utils.cucumbermonkey.CucumberMonkeyRunner'
+		standardOutput = new FileOutputStream(createSerenityLogFile("CucumberMonkey.txt"));
+	}
+}
+
+task activeMQPrinter(dependsOn: 'compileTestJava', type:JavaExec){
+	doFirst{
+		logging.captureStandardOutput LogLevel.INFO
+		println("Printing Active MQ");
+		classpath = sourceSets.main.output + sourceSets.test.output + sourceSets.main.runtimeClasspath + sourceSets.test.runtimeClasspath
+		main = 'gov.dhs.tsa.tas.serenity.utils.activemqprinter.ActiveMQPrinterRunner'
+		standardOutput = new FileOutputStream(createSerenityLogFile("ActiveMQLogs.txt"));
+		args "http://${ftWebHost}:8161/"
+	}
+}
+
+private String getTestSuiteRegex(){
+	/CucumberTestSuite\d+.java/
+}
+
+private File getTestSuitePath(File root){
+	return new File(root, "src/test/java/gov/dhs/tsa/tas/serenity/")
+}
+
+private Set<File> getGeneratedCucumberRunners(File root){
+	return matchFiles(getTestSuitePath(root), getTestSuiteRegex(), false);
+}
+
+task cleanSerenityTestOutput {
+	doLast {
+		logging.captureStandardOutput LogLevel.INFO
+		File serenityOutputDirectory = new File(project.rootDir, project.serenity.outputDirectory);
+		if(serenityOutputDirectory.exists() && serenityOutputDirectory.isDirectory()) {
+			org.apache.commons.io.FileUtils.cleanDirectory(serenityOutputDirectory);
+		}
+	}
+}
+
+
+task generateCucumberTestSuites (dependsOn: 'processTestResources') {
+	doLast{
+		logging.captureStandardOutput LogLevel.INFO
+		File root = buildFile.getParentFile();//assumes build.gradle is in root directory
+		File featureTemplatePath = new File(root, "FeatureFile.template");
+		File cucumberTemplatePath = new File(root, "CucumberTestSuite.template");
+		File featureDirectory = new File(root, "src/test/resources/features/");
+		File outputFeatureDirectory = new File(root, "src/test/resources/autogenerated/");
+		File testSuitePath = getTestSuitePath(root);
+
+		String testSuitePackage = "gov.dhs.tsa.tas.serenity"
+		String[] glue = ["gov.dhs.tsa.tas.serenity.parallel"]
+		String testSuiteRegex = getTestSuiteRegex();
+		String featureTestRegex = /.*\.feature/
+
+		Template cucumberTemplate = readTemplate(cucumberTemplatePath);
+		Template featureTemplate  = readTemplate(featureTemplatePath);
+
+
+		def FEATURES_KEY = "features";
+
+		def featureFilter = "";
+		if(project.hasProperty(FEATURES_KEY)) {
+			featureFilter = project.getProperty(FEATURES_KEY);
+		}
+		featureFilter = featureFilter.split(",").toList();
+		def runEverythingIfFeatureFilterEmpty = true;//By default, if the featureFilter is empty, run everything.
+
+		def numberOfRepeatedParallelRuns = 1;
+		if(project.hasProperty("numberOfRepeatedParallelRuns")){
+			numberOfRepeatedParallelRuns = project.getProperty("numberOfRepeatedParallelRuns").toInteger()
+		}
+		
+		def randomOrder = false;
+		if(project.hasProperty("test.randomOrder")){
+			randomOrder = project.getProperty("test.randomOrder") as boolean;
+		}
+		def randomSeed = null;
+		if(project.hasProperty("test.randomSeed")){
+			randomSeed = project.getProperty("test.randomSeed") as long;
+		}
+
+		def allFeatureFiles = matchFiles(featureDirectory, featureTestRegex, true);
+		Set<File> matchedFeatures = filterMatchedFeatures(allFeatureFiles, featureFilter,runEverythingIfFeatureFilterEmpty);
+		for(File file : matchedFeatures){
+			println("File:"+file);
+		}
+		generateCucumberTestSuites(cucumberTemplate, featureTemplate, matchedFeatures, testSuitePath, testSuitePackage, glue, outputFeatureDirectory, testSuiteRegex, numberOfRepeatedParallelRuns, randomOrder, randomSeed);
+	}
+}
+
+compileTestJava.dependsOn(generateCucumberTestSuites);
+
+public Collection<String> getFeatureFileNames(Collection<File> features, Collection<String> featureNames){
+	Set<String> matchedFeatureFileNames = new TreeSet<String>();
+	for(File featureFile : features){
+		for(String line : featureFile.readLines()){
+			for(String featureName : featureNames){
+				if(line.contains(featureName) && line.matches(/^\s*Feature\s*:\s*(.*)/)){
+					matchedFeatureFileNames.add(featureFile.getName());
+				}
+			}
+		}
+	}
+	return matchedFeatureFileNames;
+}
+
+public Set<File> filterMatchedFeatures(Collection<File> files, Collection<String> features, boolean runEverythingIfFeatureFilterEmpty) {
+	if(features.isEmpty() && runEverythingIfFeatureFilterEmpty){
+		return files;
+	}
+
+	Set<File> matchedFiles = new TreeSet<File>();
+	for(File f : files) {
+		for(String feature : features) {
+			if(f.getName().contains(feature.trim())) {
+				matchedFiles.add(f);
+				break;
+			}
+		}
+	}
+	return matchedFiles;
+}
+
+public groovy.text.Template readTemplate(File file) {
+	String rawTemplate = file.getText('UTF-8')
+	return new groovy.text.SimpleTemplateEngine().createTemplate(rawTemplate);
+}
+
+public void writeTemplate(Template template, def templateBinding, File outputFile) {
+	logger.lifecycle("Writing templated file ${outputFile}")
+	def templatedResult = template.make(templateBinding).toString()
+	outputFile << templatedResult;
+}
+
+public Set<File> matchFiles(File directory, String matcher, boolean recursive){
+	Set<File> matchingFiles = new TreeSet<String>();
+	Closure match = {
+		if(it.name.matches(matcher)) {
+			matchingFiles.add(it);
+		}
+	}
+	if(recursive) {
+		directory.eachFileRecurse(FileType.FILES, match);
+	}
+	else {
+		directory.eachFile(FileType.FILES,match);
+	}
+	return matchingFiles;
+}
+
+public void scorchDirectory(File directory) {
+	deleteDirectory(directory);
+	createDirectory(directory);
+}
+
+public void scrubDirectory(File directory, String pattern){
+	directory.eachFile(FileType.FILES) {
+		if(it.name.matches(pattern)){
+			deleteFile(it);
+		}
+	}
+}
+
+public void createDirectory(File f){
+	if(!f.exists()) {
+		logger.lifecycle("Creating ${f}")
+		f.mkdirs();
+	}
+}
+
+public void createFile(File f){
+	if(!f.exists()) {
+		logger.lifecycle("Creating ${f}")
+		f.createNewFile();
+	}
+}
+
+public void copyFile(File original, File newFile) {
+	logger.lifecycle("Copying ${original} to ${newFile}.")
+	newFile.bytes = original.bytes
+}
+
+public void deleteDirectory(File f){
+	if(f.exists()) {
+		logger.lifecycle("Deleting ${f}")
+		f.deleteDir();
+	}
+}
+
+public void deleteFile(File f){
+	if(f.exists()) {
+		logger.lifecycle("Deleting ${f}")
+		f.delete();
+	}
+}
+
+public void generateCucumberTestSuites(Template cucumberTemplate, Template featureTemplate, Collection<File> featureFiles, File testSuiteFolder, String testSuitePackage, String[] glue, File outputFeatureFolder, String pattern, int numberOfRepeatedParallelRuns, boolean randomOrder, Long seed) {
+	scrubDirectory(testSuiteFolder, pattern);
+	scorchDirectory(outputFeatureFolder);
+	
+	if(randomOrder){
+		featureFiles = new ArrayList<File>(featureFiles);
+		if(seed == null){
+			seed = System.currentTimeMillis();
+		}
+		println("Randomizing order of tests using seed '${seed}'");
+		java.util.Random random = new java.util.Random(seed);
+		Collections.shuffle(featureFiles, random);
+	}
+
+	int count = 0;
+	for(File featureFile : featureFiles) {
+		for(int parallelRunCount=0;parallelRunCount<numberOfRepeatedParallelRuns;parallelRunCount++){
+			File featureDirectory = new File(outputFeatureFolder, "feature${count}")
+			createDirectory(featureDirectory);
+			String baseName = org.apache.commons.io.FilenameUtils.getBaseName(featureFile.getName());
+			String extension = org.apache.commons.io.FilenameUtils.getExtension(featureFile.getName());
+			String uuid = java.util.UUID.randomUUID().toString().replace("-", "");
+			File newFeatureFile = new File(featureDirectory, "${baseName}${parallelRunCount}-${uuid}.${extension}")
+
+			def featureTemplateBinding = [
+				"GENERATED_DATE":new Date().toString(),
+				"FEATURE_FILE_CONTENT":featureFile.getText("UTF-8")
+			]
+
+			writeTemplate(featureTemplate, featureTemplateBinding, newFeatureFile);
+			String generatedDate = new Date().toString();
+			String packageName = testSuitePackage;
+			String featureDirectoryString = featureDirectory.getCanonicalPath().replace("\\", "/")
+			String testSuiteName = "CucumberTestSuite${count}"
+			String joinedGlue = glue.collect{"\""+it+"\""}.join(",");
+
+			def cucumberTemplateBinding = [
+				"GENERATED_DATE":generatedDate,
+				"PACKAGE_NAME":packageName,
+				"FEATURE_DIRECTORY":featureDirectoryString,
+				"TEST_SUITE_NAME":testSuiteName,
+				"GLUE":joinedGlue
+			]
+
+			String testSuiteFileName = "${testSuiteName}.java";
+			if(!testSuiteFileName.matches(pattern)) {
+				throw new Exception("Generated file name ${testSuiteFileName} does not match regex ${pattern}");
+			}
+
+			writeTemplate(cucumberTemplate, cucumberTemplateBinding, new File(testSuiteFolder, testSuiteFileName))
+			count++;
+		}
+	}
+}
+
+
+
+gradle.startParameter.continueOnFailure = true
