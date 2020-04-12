@@ -1,0 +1,286 @@
+Form Type,Variable Name,XPath
+All,USCIS Receipt Number,//nc:DocumentIdentification[nc:IdentificationCategoryDescriptionText='USCIS_RECEIPT_NBR']/nc:IdentificationID
+FormI90,Applicant Reference,//i90:FormI90/cdm:PersonBenefitRole/cdm:RoleOfPartyReference/@s:ref
+FormI821,Applicant Reference,//i821:FormI821/cdm:PersonBenefitRole/cdm:RoleOfPartyReference/@s:ref
+FormI131,Applicant Reference,//i131:FormI131/cdm:PersonBenefitRole/cdm:RoleOfPartyReference/@s:ref
+FormI821P,Applicant Reference,//i821p:FormI821P/cdm:PersonBenefitRole/cdm:RoleOfPartyReference/@s:ref
+FormI821D,Applicant Reference,//i821d:FormI821D/cdm:PersonBenefitRole/cdm:RoleOfPartyReference/@s:ref
+FormI765,Applicant Reference,//i765:FormI765/cdm:PersonBenefitRole/cdm:RoleOfPartyReference/@s:ref
+FormI601,Applicant Reference,//i601:FormI601/cdm:PersonBenefitRole/cdm:RoleOfPartyReference/@s:ref
+FormN400,Applicant Reference,//n400:FormN400/cdm:PersonBenefitRole/cdm:RoleOfPartyReference/@s:ref
+FormG28,G28 Applicant Reference,//g28:FormG28/cdm:PersonBenefitRole/cdm:RoleOfPartyReference/@s:ref
+FormG28,Representative Reference,//g28:FormG28/cdm:AttorneyRole/cdm:RoleOfPartyReference/@s:ref
+FormG28,Law Student Reference,//g28:FormG28/cdm:LawStudentRole/cdm:RoleOfPartyReference/@s:ref
+FormI90Rejected,Applicant Reference,//i90:FormI90/cdm:PersonBenefitRole/cdm:RoleOfPartyReference/@s:ref
+All,Applicant Legal Family Name,/lis:LockboxIntakeService/cdm:Person[@s:id = '${Applicant Reference}']/cdm:PersonName[@nc:personNameCommentText = 'LEGAL_NAME']/nc:PersonSurName
+All,Applicant Legal Given Name,/lis:LockboxIntakeService/cdm:Person[@s:id = '${Applicant Reference}']/cdm:PersonName[@nc:personNameCommentText = 'LEGAL_NAME']/nc:PersonGivenName
+All,Applicant Other Family Name,/lis:LockboxIntakeService/cdm:Person[@s:id = '${Applicant Reference}']/cdm:PersonName[@nc:personNameCommentText = 'PRC_NAME']/nc:PersonSurName
+All,Applicant Other Given Name,/lis:LockboxIntakeService/cdm:Person[@s:id = '${Applicant Reference}']/cdm:PersonName[@nc:personNameCommentText = 'PRC_NAME']/nc:PersonGivenName
+FormI90,Applicant Fathers Name,//i90:FormI90/i90:ApplicantFatherFirstName
+FormI90,Applicant Mothers Name,//i90:FormI90/i90:ApplicantMotherFirstName
+,,
+All,Applicant DOB,//cdm:Person[@s:id = '${Applicant Reference}']/nc:PersonBirthDate/nc:Date
+All,Applicant Country Of Birth,//cdm:Person[@s:id = '${Applicant Reference}']/nc:PersonBirthLocation/nc:LocationAddress/nc:StructuredAddress/nc:LocationCountryName
+All,Applicant Place Of Birth,//cdm:Person[@s:id = '${Applicant Reference}']/nc:PersonBirthLocation/nc:LocationAddress/nc:StructuredAddress/nc:LocationCityName
+All,Applicant State or Province Of Birth,//cdm:Person[@s:id = '${Applicant Reference}']/nc:PersonBirthLocation/nc:LocationAddress/nc:StructuredAddress/nc:LocationStateName
+,,
+All,Applicant Male Indicator,//cdm:Person[@s:id =  '${Applicant Reference}']/cdm:PersonGenderMale/cdm:ResponseIndicator = 'true'
+All,Applicant Female Indicator,//cdm:Person[@s:id =  '${Applicant Reference}']/cdm:PersonGenderFemale/cdm:ResponseIndicator = 'true'
+FormN400,Applicant Gender,//cdm:Person[@s:id =  '${Applicant Reference}']/nc:PersonSexCode
+,,
+All,Applicant Mailing Street,//cdm:PartyContactAddressAssociation[cdm:PartyReference/@s:ref = '${Applicant Reference}']/cdm:ContactAddress/nc:LocationAddress/nc:StructuredAddress/nc:LocationStreet/nc:StreetName
+All,Applicant Mailing City,//cdm:PartyContactAddressAssociation[cdm:PartyReference/@s:ref = '${Applicant Reference}']/cdm:ContactAddress/nc:LocationAddress/nc:StructuredAddress/nc:LocationCityName
+All,Applicant Mailing State,//cdm:PartyContactAddressAssociation[cdm:PartyReference/@s:ref = '${Applicant Reference}']/cdm:ContactAddress/nc:LocationAddress/nc:StructuredAddress/nc:LocationStateName
+All,Applicant Mailing Country,//cdm:PartyContactAddressAssociation[cdm:PartyReference/@s:ref = '${Applicant Reference}']/cdm:ContactAddress/nc:LocationAddress/nc:StructuredAddress/nc:LocationCountryName
+All,Applicant Mailing County,//cdm:PartyContactAddressAssociation[cdm:PartyReference/@s:ref = '${Applicant Reference}']/cdm:ContactAddress/nc:LocationAddress/nc:StructuredAddress/nc:LocationCountyName
+All,Applicant Mailing Zip,//cdm:PartyContactAddressAssociation[cdm:PartyReference/@s:ref = '${Applicant Reference}']/cdm:ContactAddress/nc:LocationAddress/nc:StructuredAddress/nc:LocationPostalCode
+,,
+All,Applicant Physical Street,//cdm:PartyContactAddressAssociation[@type = 'PHYSICAL'][cdm:PartyReference/@s:ref = '${Applicant Reference}']/cdm:ContactAddress/nc:LocationAddress/nc:StructuredAddress/nc:LocationStreet/nc:StreetName
+All,Applicant Physical City,//cdm:PartyContactAddressAssociation[@type = 'PHYSICAL'][cdm:PartyReference/@s:ref = '${Applicant Reference}']/cdm:ContactAddress/nc:LocationAddress/nc:StructuredAddress/nc:LocationCityName
+All,Applicant Physical State,//cdm:PartyContactAddressAssociation[@type = 'PHYSICAL'][cdm:PartyReference/@s:ref = '${Applicant Reference}']/cdm:ContactAddress/nc:LocationAddress/nc:StructuredAddress/nc:LocationStateName
+All,Applicant Physical Country,//cdm:PartyContactAddressAssociation[@type = 'PHYSICAL'][cdm:PartyReference/@s:ref = '${Applicant Reference}']/cdm:ContactAddress/nc:LocationAddress/nc:StructuredAddress/nc:LocationCountryName
+All,Applicant Physical County,//cdm:PartyContactAddressAssociation[@type = 'PHYSICAL'][cdm:PartyReference/@s:ref = '${Applicant Reference}']/cdm:ContactAddress/nc:LocationAddress/nc:StructuredAddress/nc:LocationCountyName
+All,Applicant Physical Zip,//cdm:PartyContactAddressAssociation[@type = 'PHYSICAL'][cdm:PartyReference/@s:ref = '${Applicant Reference}']/cdm:ContactAddress/nc:LocationAddress/nc:StructuredAddress/nc:LocationPostalCode
+,,
+All,Applicant Email,//cdm:PartyContactEmailAssociation[cdm:PartyReference/@s:ref = '${Applicant Reference}']/cdm:ContactEmailID/nc:EmailID
+All,Applicant Daytime Phone,//cdm:PartyContactTelephoneAssociation[@type = 'DAYTIME'][cdm:PartyReference/@s:ref = '${Applicant Reference}']/cdm:ContactTelephoneNumber/cdm:TelephoneNumber/nc:FullTelephoneNumber/nc:TelephoneNumberFullID
+All,Applicant Mobile Phone,//cdm:PartyContactTelephoneAssociation[@type = 'MOBILE'][cdm:PartyReference/@s:ref ='${Applicant Reference}']/cdm:ContactTelephoneNumber/cdm:TelephoneNumber/nc:FullTelephoneNumber/nc:TelephoneNumberFullID
+,,
+All,Applicant Race 1,//cdm:Person[@s:id = '${Applicant Reference}']/nc:PersonRaceText[1]
+All,Applicant Race 2,//cdm:Person[@s:id = '${Applicant Reference}']/nc:PersonRaceText[2]
+All,Applicant Hair Color,//cdm:Person[@s:id = '${Applicant Reference}']/nc:PersonHairColorCode
+All,Applicant Eye Color,//cdm:Person[@s:id = '${Applicant Reference}']/nc:PersonEyeColorCode
+All,Applicant Height,//cdm:Person[@s:id = '${Applicant Reference}']/nc:PersonHeightDescriptionText
+All,Applicant Weight,//cdm:Person[@s:id = '${Applicant Reference}']/nc:PersonWeightDescriptionText
+All,Applicant Ethnicity,//cdm:Person[@s:id = '${Applicant Reference}']/nc:PersonEthnicityText
+,,
+All,Applicant Alien Number,"substring(//cdm:PersonCountryAssociation[cdm:AlienRole/cdm:RoleOfPartyReference/@s:ref = '${Applicant Reference}']/cdm:AlienRole/im:AlienIDDetails/im:AlienNumber/nc:IdentificationID, 2)"
+All,Applicant SSN,//cdm:Person[@s:id = '${Applicant Reference}']/nc:PersonSSNIdentification/nc:IdentificationID
+All,Applicant ELIS Account Number,//cdm:Person[@s:id = '${Applicant Reference}']/cdm:ELISAccountNumber/nc:IdentificationID
+,,
+All,Interpreter Reference,//cdm:DocumentInterpreterReference/@s:ref
+All,Interpreter Given Name,/lis:LockboxIntakeService/cdm:Person[@s:id = '${Interpreter Reference}']/cdm:PersonName/nc:PersonGivenName
+All,Interpreter Family Name,/lis:LockboxIntakeService/cdm:Person[@s:id = '${Interpreter Reference}']/cdm:PersonName/nc:PersonSurName
+All,Interpreter Organization Name,"translate(/lis:LockboxIntakeService/cdm:Person[@s:id = '${Interpreter Reference}']/cdm:PersonName/nc:PersonMiddleName, 'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ')"
+All,Interpreter Mailing Street,//cdm:PartyContactAddressAssociation[cdm:PartyReference/@s:ref = '${Interpreter Reference}']/cdm:ContactAddress/nc:LocationAddress/nc:StructuredAddress/nc:LocationStreet/nc:StreetName
+All,Interpreter Mailing City,//cdm:PartyContactAddressAssociation[cdm:PartyReference/@s:ref = '${Interpreter Reference}']/cdm:ContactAddress/nc:LocationAddress/nc:StructuredAddress/nc:LocationCityName
+All,Interpreter Mailing State,//cdm:PartyContactAddressAssociation[cdm:PartyReference/@s:ref = '${Interpreter Reference}']/cdm:ContactAddress/nc:LocationAddress/nc:StructuredAddress/nc:LocationStateName
+All,Interpreter Mailing Country,//cdm:PartyContactAddressAssociation[cdm:PartyReference/@s:ref = '${Interpreter Reference}']/cdm:ContactAddress/nc:LocationAddress/nc:StructuredAddress/nc:LocationCountryName
+All,Interpreter Mailing County,//cdm:PartyContactAddressAssociation[cdm:PartyReference/@s:ref = '${Interpreter Reference}']/cdm:ContactAddress/nc:LocationAddress/nc:StructuredAddress/nc:LocationCountyName
+All,Interpreter Mailing Zip,//cdm:PartyContactAddressAssociation[cdm:PartyReference/@s:ref = '${Interpreter Reference}']/cdm:ContactAddress/nc:LocationAddress/nc:StructuredAddress/nc:LocationPostalCode
+All,Interpreter Daytime Phone,//cdm:PartyContactTelephoneAssociation[@type='DAYTIME'][cdm:PartyReference/@s:ref = '${Interpreter Reference}']/cdm:ContactTelephoneNumber/cdm:TelephoneNumber/nc:FullTelephoneNumber/nc:TelephoneNumberFullID
+All,Interpreter Email,//cdm:PartyContactEmailAssociation[cdm:PartyReference/@s:ref = '${Interpreter Reference}']/cdm:ContactEmailID/nc:EmailID
+FormN400,Interpreter Language,current()//cdm:InterpreterLanguageUsed
+FormN400,Interpreter Organization Reference,//cdm:PersonOrganizationAffiliationAssociation[cdm:PersonReference/@s:ref = '${Interpreter Reference}']/cdm:OrganizationReference/@s:ref
+FormN400,N400 Interpreter Organization Name,//cdm:Organization[@s:id='${Interpreter Organization Reference}']/nc:OrganizationName
+,,
+All,Preparer Reference,//cdm:DocumentCreatorReference/@s:ref
+All,Preparer Given Name,//cdm:Person[@s:id = '${Preparer Reference}']/cdm:PersonName/nc:PersonGivenName
+All,Preparer Family Name,//cdm:Person[@s:id = '${Preparer Reference}']/cdm:PersonName/nc:PersonSurName
+All,Preparer Organization Name,"translate(//cdm:Organization[cdm:PartyRoleReference/@s:ref = '${Preparer Reference}']/nc:OrganizationName, 'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ')"
+All,Preparer Mailing Street,//cdm:PartyContactAddressAssociation[cdm:PartyReference/@s:ref = '${Preparer Reference}']/cdm:ContactAddress/nc:LocationAddress/nc:StructuredAddress/nc:LocationStreet/nc:StreetName
+All,Preparer Mailing City,//cdm:PartyContactAddressAssociation[cdm:PartyReference/@s:ref = '${Preparer Reference}']/cdm:ContactAddress/nc:LocationAddress/nc:StructuredAddress/nc:LocationCityName
+All,Preparer Mailing State,//cdm:PartyContactAddressAssociation[cdm:PartyReference/@s:ref = '${Preparer Reference}']/cdm:ContactAddress/nc:LocationAddress/nc:StructuredAddress/nc:LocationStateName
+All,Preparer Mailing Country,//cdm:PartyContactAddressAssociation[cdm:PartyReference/@s:ref = '${Preparer Reference}']/cdm:ContactAddress/nc:LocationAddress/nc:StructuredAddress/nc:LocationCountryName
+All,Preparer Mailing County,//cdm:PartyContactAddressAssociation[cdm:PartyReference/@s:ref = '${Preparer Reference}']/cdm:ContactAddress/nc:LocationAddress/nc:StructuredAddress/nc:LocationCountyName
+All,Preparer Mailing Zip,//cdm:PartyContactAddressAssociation[cdm:PartyReference/@s:ref = '${Preparer Reference}']/cdm:ContactAddress/nc:LocationAddress/nc:StructuredAddress/nc:LocationPostalCode
+All,Preparer Daytime Phone,//cdm:PartyContactTelephoneAssociation[@type='DAYTIME'][cdm:PartyReference/@s:ref = '${Preparer Reference}']/cdm:ContactTelephoneNumber/cdm:TelephoneNumber/nc:FullTelephoneNumber/nc:TelephoneNumberFullID
+All,Preparer Fax,//cdm:PartyContactTelephoneAssociation[@type = 'FAX'][@cdm:PartyReference/@s:ref = '${Preparer Reference}']/cdm:ContactTelephoneNumber/cdm:TelephoneNumber/nc:FullTelephoneNumber/nc:TelephoneSuffixID
+All,Preparer Email,//cdm:PartyContactEmailAssociation[cdm:PartyReference/@s:ref = '${Preparer Reference}']/cdm:ContactEmailID/nc:EmailID
+FormN400,Preparer Organization Reference,//cdm:PersonOrganizationAffiliationAssociation[cdm:PersonReference/@s:ref = '${Preparer Reference}']/cdm:OrganizationReference/@s:ref
+FormN400,N400 Preparer Organization Name,//cdm:Organization[@s:id='${Preparer Organization Reference}']/nc:OrganizationName
+FormI821D,Preparer Signature Indicator,//cdm:DocumentCreatorSignatureIndicator
+FormI821D,Preparer Signature Date,//cdm:DocumentCreatorSignatureDate/nc:Date
+FormI821D,Interpreter Signature Date,//cdm:DocumentInterpreterSignatureDate/nc:Date
+,,
+FormI90,Class Of Admission,//cdm:PersonCountryAssociation[cdm:AlienRole/cdm:RoleOfPartyReference/@s:ref ='${Applicant Reference}']/cdm:AlienRole/im:AdmissionIdentification/nc:IdentificationStatus/nc:StatusText
+FormI90,Date Of Admission,//cdm:PersonCountryAssociation[cdm:AlienRole/cdm:RoleOfPartyReference/@s:ref = '${Applicant Reference}']/cdm:AlienRole/im:AdmissionIdentification/nc:IdentificationEffectiveDate/nc:Date
+FormI90,Port Of Entry,//cdm:PersonCountryAssociation[cdm:AlienRole/cdm:RoleOfPartyReference/@s:ref = '${Applicant Reference}']/cdm:AlienRole/im:AdmissionIdentification/nc:IdentificationJurisdictionText
+FormI90,Destination State Code,//cdm:PersonCountryAssociation[cdm:AlienRole/cdm:RoleOfPartyReference/@s:ref =  '${Applicant Reference}']/cdm:AlienRole/cdm:AlienAdmissionDestinationLocation/nc:LocationAddress/nc:StructuredAddress/nc:LocationStateName
+FormI90,Visa Applied Location,//cdm:PersonCountryAssociation[cdm:AlienRole/cdm:RoleOfPartyReference/@s:ref = '${Applicant Reference}']/cdm:AlienRole/cdm:AlienVisaAppliedLocation/nc:LocationAddress/nc:AddressFullText
+FormI90,Visa Granted Location,//cdm:PersonCountryAssociation[cdm:AlienRole/cdm:RoleOfPartyReference/@s:ref =  '${Applicant Reference}']/cdm:AlienRole/cdm:AlienVisaGrantLocation/nc:LocationAddress/nc:AddressFullText
+FormI90,Commuter Port Of Entry,//cdm:PersonCountryAssociation[cdm:AlienRole/cdm:RoleOfPartyReference/@s:ref = '${Applicant Reference}']/cdm:AlienRole/cdm:AlienArrivalPortOfEntryLocation/nc:LocationAddress/nc:AddressFullText
+,,
+All,Remittance Type,//rem:Type
+All,Amount Paid,sum(//rem:AmountPaid) div 100
+All,Bank Transaction Type,//rem:Remittance/nc:DocumentIdentification[nc:IdentificationCategoryDescriptionText='BANK_TRANS_TYPE']/nc:IdentificationID
+All,Bank Receipt Number,//rem:Remittance/nc:DocumentIdentification[nc:IdentificationCategoryDescriptionText='BANK_RECEIPT_NBR']/nc:IdentificationID
+All,Bank Transaction Number,//his:History/nc:DocumentIdentification[nc:IdentificationCategoryDescriptionText='BANK_TRANS_NBR']/nc:IdentificationID
+All,History Action Code 1,//his:Action[1]
+All,History Action Code 2,//his:Action[2]
+,,
+FormG28,Attorney Account Number,//g28:FormG28/cdm:USCISELISAccountNumber/nc:IdentificationID
+FormG28,Attorney State License ID,//cdm:AttorneyRole/cdm:AttorneyStateLicenseId/nc:IdentificationID
+FormI131, I131ApplicationReason, //i131:FormI131/cdm:ApplicationReasonAlienReentryPermit/cdm:ResponseIndicator
+FormI131, I131Part3Q1,  //i131:FormI131/cdm:ApplicationReasonAlienReentryPermit/cdm:ResponseIndicator
+FormI131, I131Part3Q2,  //i131:FormI131/cdm:ApplicationReasonAlienReentryPermit/cdm:ResponseIndicator
+FormI131, I131Part3Q3a, //i131:FormI131/cdm:AnyApplicantNowInExclusionDeportationRemovalProceeding/cdm:ResponseYesIndicator
+FormI131, I131Part3Q3b, //i131:FormI131/cdm:DHSOffice
+FormI131, I131Part3Q4a, //i131:FormI131/cdm:EverBeenIssuedReentryOrRefugeeTravelDoc/cdm:ResponseIndicator
+FormI131, I131Part3Q4b, //i131:FormI131/cdm:ReentryOrRefugeeTravelDocDate/nc:DateTime
+FormI131, I131Part3Q4c, //i131:FormI131/cdm:ReentryOrRefugeeTravelDocDisposition
+FormI131, I131Part6Q1,  //i131:FormI131/cdm:ApplicationReasonAlienReentryPermit/cdm:ResponseIndicator
+FormI131, I131Part6Q2,  //i131:FormI131/cdm:PlanToTravelToCountryFromWhichYouSeekAsylum/cdm:ResponseIndicator
+FormI131, I131Part6Q3a, //i131:FormI131/cdm:HaveYouReturnedToCountryFromWhichYouSeekAsylum/cdm:ResponseIndicator
+FormI131, I131Part6Q3b, //i131:FormI131/cdm:AppliedOrObtainedPassportOrEntryPermitForCountryFromWhichYouSeekAsylum/cdm:ResponseIndicator
+FormI131, I131Part6Q3c, //i131:FormI131/cdm:AppliedOrReceivedBenefitFromCountryFromWhichYouSeekAsylum/cdm:ResponseIndicator
+FormI131, I131Part6Q4a, //i131:FormI131/cdm:ReacquiredNationalityOfCountryFromWhichYouSeekAsylum/cdm:ResponseIndicator
+FormI131, I131Part6Q4b, //i131:FormI131/cdm:AcquiredNewNationality/cdm:ResponseIndicator
+FormI131, I131Part6Q4b, //i131:FormI131/cdm:BeenGrantedRefugeeOrAsylumStatusInAnotherCountry/cdm:ResponseIndicator
+,,
+FormN400,N400Part8NumOrgs,count(//cdm:PersonEmploymentAssociation[cdm:GenericEmployeeRole/cdm:RoleOfPartyReference[@s:ref = '${Applicant Reference}']])
+FormN400,N400Part8FirstOrg,//cdm:PersonEmploymentAssociation[cdm:GenericEmployeeRole/cdm:RoleOfPartyReference[@s:ref = '${Applicant Reference}']][0]/cdm:Organization/nc:OrganizationName
+FormN400,N400Part8Occupation,//cdm:PersonEmploymentAssociation[cdm:GenericEmployeeRole/cdm:RoleOfPartyReference[@s:ref = '${Applicant Reference}']][0]/cdm:GenericEmployeeRole/nc:EmployeeOccupationText
+FormN400,N400Part10Q1,//cdm:Person[@s:id='${Applicant Reference}']/nc:PersonMaritalStatusText
+FormN400,N400Part10Q2,//cdm:Person[@s:id='${Applicant Reference}']/cdm:SpouseCurrentMemberofUSArmedForcesIndicator
+FormN400,N400Part10Q3,//cdm:Person[@s:id='${Applicant Reference}']/cdm:PersonNumberOfMarriages
+FormN400,N400Part10Q4-A-LN,//cdm:Person[@s:id='APPLICANT1_CURRENTSPOUSE_PERSON']/cdm:PersonName[not(@nc:personNameCommentText)]/nc:PersonSurName
+FormN400,N400Part10Q4-B-FN,//cdm:Person[@s:id='APPLICANT1_CURRENTSPOUSE_PERSON']/cdm:PersonName[@nc:personNameCommentText='OTHER_NAME'][1]/nc:PersonGivenName
+FormN400,N400Part10Q4-C-LN,//cdm:Person[@s:id='APPLICANT1_CURRENTSPOUSE_PERSON']/cdm:PersonName[@nc:personNameCommentText='OTHER_NAME'][2]/nc:PersonSurName
+FormN400,N400Part10Q5,//cdm:Person[@s:id='APPLICANT1_CURRENTSPOUSE_PERSON']/nc:PersonUSCitizenIndicator
+FormN400,N400Part10Q8,//cdm:Person[@s:id='APPLICANT1_CURRENTSPOUSE_PERSON']/cdm:PersonNumberOfMarriages
+FormN400,N400Part10Q8A-LN,//cdm:Person[@s:id='APPLICANT1_CURRENTSPOUSE_PREVIOUSSPOUSE1_PERSON']/cdm:PersonName/nc:PersonSurName
+FormN400,N400Part10Q8B,//cdm:Person[@s:id='APPLICANT1_CURRENTSPOUSE_PREVIOUSSPOUSE1_PERSON']/cdm:PersonCountryAssociation[@s:id='APPLICANT1_CURRENTSPOUSE_PREVIOUSSPOUSE1_COUNTRY_ROLE']/im:ImmigrationStatusCode
+FormN400,N400Part10Q8C,//cdm:Person[@s:id='APPLICANT1_CURRENTSPOUSE_PREVIOUSSPOUSE1_PERSON']/nc:PersonBirthDate/nc:Date
+FormN400,N400Part10Q8F,//cdm:Person[@s:id='APPLICANT1_CURRENTSPOUSE_PREVIOUSSPOUSE1_PERSON']/cdm:PersonMarriageAssociation[@s:id='APPLICANT1_CURRENTSPOUSE_PREVIOUSSPOUSE1_ASSOC']/cdm:DateRange/nc:StartDate/nc:Date
+FormN400,N400Part10Q9A-LN,//cdm:Person[@s:id='APPLICANT1_PREVIOUSSPOUSE1_PERSON']/cdm:PersonName/nc:PersonSurName
+FormN400,N400Part10Q9H,//cdm:Person[@s:id='${Applicant Reference}']/cdm:PersonMarriageAssociation[@s:id='APPLICANT1_PREVIOUSSPOUSE1_ASSOC']/cdm:PersonMarriageEndReason
+FormN400,N400Part11Q1,//cdm:Person[@s:id='${Applicant Reference}']/cdm:PersonNumberOfChildren
+FormN400,N400Part11Q2-A-FN,//cdm:Person[@s:id='APPLICANT1_OFFSPRING1_PERSON']/cdm:PersonName/nc:PersonGivenName
+FormN400,N400Part11Q2-A-LN,//cdm:Person[@s:id='APPLICANT1_OFFSPRING1_PERSON']/cdm:PersonName/nc:PersonSurName
+FormN400,N400Part12Q1,//cdm:PersonCountryAssociation[cdm:AlienRole/cdm:RoleOfPartyReference/@s:ref = '${Applicant Reference}']/cdm:AlienRole/cdm:AlienClaimedUSCitizenship/cdm:ResponseIndicator
+FormN400,N400Part12Q2,//cdm:PersonCountryAssociation[cdm:AlienRole/cdm:RoleOfPartyReference/@s:ref = '${Applicant Reference}']/cdm:AlienRole/cdm:AlienRegisteredVoteUS/cdm:ResponseIndicator
+FormN400,N400Part12Q3,//cdm:PersonCountryAssociation[cdm:AlienRole/cdm:RoleOfPartyReference/@s:ref = '${Applicant Reference}']/cdm:AlienRole/cdm:AlienVotedUS/cdm:ResponseIndicator
+FormN400,N400Part12Q9A,//cdm:Person[@s:id = '${Applicant Reference}']/cdm:PersonMembershipAssociation/cdm:ResponseIndicator
+FormN400,N400Part12Q9B_Name,//cdm:Organization[@s:id = /cdm:PersonOrganizationAffiliationAssociation[@s:id = /cdm:Person[@s:id='${Applicant Reference}']/cdm:PersonOrganizationAffiliationAssociationReference/@s:ref]/cdm:OrganizationReference/@s:ref][1]/nc:OrganizationName
+FormN400,N400Part12Q9B_DateFrom,//cdm:Organization[@s:id = /cdm:PersonOrganizationAffiliationAssociation[@s:id = /cdm:Person[@s:id='${Applicant Reference}']/cdm:PersonOrganizationAffiliationAssociationReference/@s:ref]/cdm:OrganizationReference/@s:ref][1]/cdm:DateRange/nc:StartDate/nc:Date
+FormN400,N400Part12Q29arrestReason,//cdm:Person[@s:id='${Applicant Reference}']/j:Arrest[1]/j:ArrestProbableCauseText
+FormN400,N400Part12Q29arrestDate,//cdm:Person[@s:id='${Applicant Reference}']/j:Arrest[1]/j:ArrestArraignmentDate/nc:Date
+,,
+FormI821D,I1821DPart2Q1ResponseNoIndicator,//i821d:FormI821D/i821d:ContinouslyResidentedSinceJune15th2007/cdm:ResponseNoIndicator
+FormI821D,I1821DPart2Q1ResponseYesIndicator,//i821d:FormI821D/i821d:ContinouslyResidentedSinceJune15th2007/cdm:ResponseYesIndicator
+FormI821D,I821dPart2Travel1StartDate, //cdm:PersonCountryAssociation[cdm:AlienRole/cdm:RoleOfPartyReference/@s:ref = '${Applicant Reference}']/cdm:AlienRole/cdm:AlienTravelOutsideUS/cdm:TravelDetails[1]/cdm:DateRange/nc:StartDate/nc:Date
+FormI821D,I821dPart2Travel1EndDate, //cdm:PersonCountryAssociation[cdm:AlienRole/cdm:RoleOfPartyReference/@s:ref = '${Applicant Reference}']/cdm:AlienRole/cdm:AlienTravelOutsideUS/cdm:TravelDetails[1]/cdm:DateRange/nc:EndDate/nc:Date
+FormI821D,I821dPart2Travel1Reason, //cdm:PersonCountryAssociation[cdm:AlienRole/cdm:RoleOfPartyReference/@s:ref = '${Applicant Reference}']/cdm:AlienRole/cdm:AlienTravelOutsideUS/cdm:TravelDetails[1]/cdm:TravelReason
+FormI821D,I821dPart2Travel2StartDate, //cdm:PersonCountryAssociation[cdm:AlienRole/cdm:RoleOfPartyReference/@s:ref = '${Applicant Reference}']/cdm:AlienRole/cdm:AlienTravelOutsideUS/cdm:TravelDetails[2]/cdm:DateRange/nc:StartDate/nc:Date
+FormI821D,I821dPart2Travel2EndDate, //cdm:PersonCountryAssociation[cdm:AlienRole/cdm:RoleOfPartyReference/@s:ref = '${Applicant Reference}']/cdm:AlienRole/cdm:AlienTravelOutsideUS/cdm:TravelDetails[2]/cdm:DateRange/nc:EndDate/nc:Date
+FormI821D,I821dPart2Travel2Reason, //cdm:PersonCountryAssociation[cdm:AlienRole/cdm:RoleOfPartyReference/@s:ref = '${Applicant Reference}']/cdm:AlienRole/cdm:AlienTravelOutsideUS/cdm:TravelDetails[2]/cdm:TravelReason
+FormI821D,I821dPart3MilitaryDischarge, //cdm:PersonMilitaryService/cdm:MilitaryDischargeType
+FormI821D,I821dPart3MilitaryBranch, //cdm:PersonMilitaryService/cdm:MilitaryBranch
+FormI821D,I821dPart3Military, //cdm:PersonMilitaryService
+FormI821D,I821dPart1PreviousExpirationDate, //i821d:FormI821D/i821d:MostRecentDacaExpiration/nc:Date
+FormI821D,I821dPart1RemovealProceeding5fDate,     //cdm:PersonCountryAssociation[cdm:AlienRole/cdm:RoleOfPartyReference/@s:ref = '${Applicant Reference}']/cdm:AlienRole/cdm:AlienImmigrationProceedingsAgainst/cdm:AlienImmigrationProceedingsDateRange/nc:StartDate/nc:Date
+FormI821D,I821dPart1RemovealProceeding5gLocation, //cdm:PersonCountryAssociation[cdm:AlienRole/cdm:RoleOfPartyReference/@s:ref = '${Applicant Reference}']/cdm:AlienRole/cdm:AlienImmigrationProceedingsAgainst/cdm:AlienImmigrationProceedingsLocation/nc:LocationAddress/nc:AddressFullText
+FormI821D,I821dPart1RemovealProceeding5ResponseNoIndicator, //i821d:FormI821D/i821d:ProcessingFlagRemovalProceedings/cdm:ResponseNoIndicator
+FormI821D,I821dPart1RemovealProceeding5ResponseYesIndicator, //i821d:FormI821D/i821d:ProcessingFlagRemovalProceedings/cdm:ResponseYesIndicator
+FormI821D,I821dPart1RemovealProceeding5a, //i821d:FormI821D/i821d:ProcessingFlagCurrentlyInProceedings/cdm:ResponseIndicator
+FormI821D,I821dPart1RemovealProceeding5b, //i821d:FormI821D/i821d:ProcessingFlagAdministrativelyClosedProceedings/cdm:ResponseIndicator
+FormI821D,I821dPart1RemovealProceeding5c, //i821d:FormI821D/i821d:ProcessingFlagTerminatedProceedings/cdm:ResponseIndicator
+FormI821D,I821dPart1RemovealProceeding5d, //i821d:FormI821D/i821d:ProcessingFlagSubjectToFinalOrderProceedings/cdm:ResponseIndicator
+FormI821D,I821dPart1RemovealProceeding5e, //i821d:FormI821D/i821d:ProcessingFlagOtherProceedings/cdm:ResponseIndicator
+FormI821D,I821dPart1PlaceOfBirth, //i821d:FormI821D/i821d:ProcessingFlagOtherProceedings
+FormI821D,I821DApplicantOtherFamilyName,/lis:LockboxIntakeService/cdm:Person[@s:id = '${Applicant Reference}']/cdm:PersonName[@nc:personNameCommentText = 'OTHER_NAME']/nc:PersonSurName
+FormI821D,I821DApplicantOtherGivenName,/lis:LockboxIntakeService/cdm:Person[@s:id = '${Applicant Reference}']/cdm:PersonName[@nc:personNameCommentText = 'OTHER_NAME']/nc:PersonGivenName
+FormI821D,FormI821DInterpreterLanguage,current()//cdm:InterpreterLanguageUsed
+FormI765,I765P1Q11office,//i765:FormI765/i765:USCISEmploymentAuthorizationApplicationOffice
+FormI765,I765P1Q11dates,//i765:FormI765/i765:USCISEmploymentAuthorizationApplicationDate/nc:Date
+FormI765,I765P1Q11result,//i765:FormI765/i765:USCISEmploymentAuthorizationResultDescription
+FormI765,I765P1Q12,//cdm:PersonCountryAssociation[1][cdm:AlienRole/cdm:RoleOfPartyReference/@s:ref=//i765:FormI765/cdm:PersonBenefitRole/cdm:RoleOfPartyReference/@s:ref]/cdm:AlienRole/im:AdmissionIdentification/nc:IdentificationEffectiveDate/nc:Date
+FormI765,I765P1Q13,//cdm:PersonCountryAssociation[1][cdm:AlienRole/cdm:RoleOfPartyReference/@s:ref = //i765:FormI765/cdm:PersonBenefitRole/cdm:RoleOfPartyReference/@s:ref]/cdm:AlienRole/im:AdmissionIdentification/nc:IdentificationJurisdictionText
+FormI765,I765P1Q14,//cdm:PersonCountryAssociation[1][cdm:AlienRole/cdm:RoleOfPartyReference/@s:ref = //i765:FormI765/cdm:PersonBenefitRole/cdm:RoleOfPartyReference/@s:ref]/im:ImmigrationStatusCode
+FormI765,I765P1Q15,//cdm:PersonCountryAssociation[1][cdm:AlienRole/cdm:RoleOfPartyReference/@s:ref = //i765:FormI765/cdm:PersonBenefitRole/cdm:RoleOfPartyReference/@s:ref]/cdm:AlienRole/im:AdmissionIdentification/nc:IdentificationStatus/nc:StatusText
+FormI765,I765P1Q16,//cdm:PersonCountryAssociation[1][cdm:AlienRole/cdm:RoleOfPartyReference/@s:ref = //i765:FormI765/cdm:PersonBenefitRole/cdm:RoleOfPartyReference/@s:ref]/cdm:AlienRole/cdm:AlienEligibilityReason/cdm:AlienEligibilityCode
+FormI765,I765P1Q17degree,//i765:FormI765/i765:Degree
+FormI765,I765P1Q17everifyid,//i765:FormI765/i765:EmployerEVerifyID/nc:IdentificationID
+FormI765,I765P1Q17everifyname,//cdm:Organization[@s:id = //cdm:PersonEmploymentAssociation[cdm:GenericEmployeeRole/cdm:RoleOfPartyReference/@s:ref = //cdm:PersonBenefitRole/cdm:RoleOfPartyReference/@s:ref]/cdm:EmployerRole/cdm:RoleOfPartyReference/@s:ref]/nc:OrganizationName
+FormI821D, I821DArrestedinTheUSAYes, //cdm:Person[@s:id='${Applicant Reference}']/cdm:ArrestedinTheUSA/cdm:ResponseYesIndicator
+FormI821D, I821DArrestedinTheUSANo, //cdm:Person[@s:id='${Applicant Reference}']/cdm:ArrestedinTheUSA/cdm:ResponseNoIndicator
+FormI821D, I821DArrestedOutsideTheUSAYes, //cdm:Person[@s:id='${Applicant Reference}']/cdm:ArrestedOutsideTheUSA/cdm:ResponseYesIndicator
+FormI821D, I821DArrestedOutsideTheUSANo, //cdm:Person[@s:id='${Applicant Reference}']/cdm:ArrestedOutsideTheUSA/cdm:ResponseNoIndicator
+FormI821D, I821DPlanToEngageInTerrorismYes, //cdm:Person[@s:id='${Applicant Reference}']/cdm:PlanToEngageInTerrorism/cdm:ResponseYesIndicator
+FormI821D, I821DPlanToEngageInTerrorismNo, //cdm:Person[@s:id='${Applicant Reference}']/cdm:PlanToEngageInTerrorism/cdm:ResponseNoIndicator
+FormI821D, I821DEverBeenMemberOfGangYes, //cdm:Person[@s:id='${Applicant Reference}']/cdm:EverBeenMemberOfGang/cdm:ResponseYesIndicator
+FormI821D, I821DEverBeenMemberOfGangNo, //cdm:Person[@s:id='${Applicant Reference}']/cdm:EverBeenMemberOfGang/cdm:ResponseNoIndicator
+FormI821D, I821DEverEngangedInGenocideYes, //cdm:Person[@s:id='${Applicant Reference}']/cdm:EverEngangedInGenocide/cdm:ResponseYesIndicator
+FormI821D, I821DEverEngangedInGenocideNo, //cdm:Person[@s:id='${Applicant Reference}']/cdm:EverEngangedInGenocide/cdm:ResponseNoIndicator
+FormI821D, I821DKillingAnyPersonYes, //cdm:Person[@s:id='${Applicant Reference}']/cdm:KillingAnyPerson/cdm:ResponseYesIndicator
+FormI821D, I821DKillingAnyPersonNo, //cdm:Person[@s:id='${Applicant Reference}']/cdm:KillingAnyPerson/cdm:ResponseNoIndicator
+FormI821D, I821DSeverlyInjuredAnyPersonYes, //cdm:Person[@s:id='${Applicant Reference}']/cdm:SeverlyInjuredAnyPerson/cdm:ResponseYesIndicator
+FormI821D, I821DSeverlyInjuredAnyPersonNo, //cdm:Person[@s:id='${Applicant Reference}']/cdm:SeverlyInjuredAnyPerson/cdm:ResponseNoIndicator
+FormI821D, I821DForcedSexualContactWithAnyPersonYes, //cdm:Person[@s:id='${Applicant Reference}']/cdm:ForcedSexualContactWithAnyPerson/cdm:ResponseYesIndicator
+FormI821D, I821DForcedSexualContactWithAnyPersonNo, //cdm:Person[@s:id='${Applicant Reference}']/cdm:ForcedSexualContactWithAnyPerson/cdm:ResponseNoIndicator
+FormI821D, I821DRecruitedPersonUnderTheAgeOf15inArmedForceYes, //cdm:Person[@s:id='${Applicant Reference}']/cdm:RecruitedPersonUnderTheAgeOf15inArmedForce/cdm:ResponseYesIndicator
+FormI821D, I821DRecruitedPersonUnderTheAgeOf15inArmedForceNo, //cdm:Person[@s:id='${Applicant Reference}']/cdm:RecruitedPersonUnderTheAgeOf15inArmedForce/cdm:ResponseNoIndicator
+FormI821D, I821DUsePersonUnderTheAgeOf15InHostilitiesYes, //cdm:Person[@s:id='${Applicant Reference}']/cdm:UsePersonUnderTheAgeOf15InHostilities/cdm:ResponseYesIndicator
+FormI821D, I821DUsePersonUnderTheAgeOf15InHostilitiesNo, //cdm:Person[@s:id='${Applicant Reference}']/cdm:UsePersonUnderTheAgeOf15InHostilities/cdm:ResponseNoIndicator
+FormI821D,I1821DPart2Q1ResponseNoIndicator,//i821d:FormI821D/i821d:ContinouslyResidentedSinceJune15th2007/cdm:ResponseNoIndicator
+FormI821D,I1821DPart2Q1ResponseYesIndicator,//i821d:FormI821D/i821d:ContinouslyResidentedSinceJune15th2007/cdm:ResponseYesIndicator
+FormI821D,I821DPart2Q2aResidence1FromDate,//cdm:PartyContactAddressAssociation[@type = 'HOME'][cdm:PartyReference/@s:ref=//i821d:FormI821D/cdm:PersonBenefitRole/cdm:RoleOfPartyReference/@s:ref][1]/cdm:DateRange/nc:StartDate/nc:Date
+FormI821D,I821DPart2Q2aResidence1ToDate,//cdm:PartyContactAddressAssociation[@type = 'HOME'][cdm:PartyReference/@s:ref=//i821d:FormI821D/cdm:PersonBenefitRole/cdm:RoleOfPartyReference/@s:ref][1]/cdm:DateRange/nc:EndDate/nc:Date
+FormI821D,I821DPart2Q2aResidence1Address,//cdm:PartyContactAddressAssociation[@type = 'HOME'][cdm:PartyReference/@s:ref = //i821d:FormI821D/cdm:PersonBenefitRole/cdm:RoleOfPartyReference/@s:ref][1]/cdm:ContactAddress/nc:LocationAddress/nc:StructuredAddress/nc:LocationStreet/nc:StreetName
+FormI821D,I821DPart2Q2aResidence1Apt,//cdm:PartyContactAddressAssociation[@type = 'HOME'][cdm:PartyReference/@s:ref = //i821d:FormI821D/cdm:PersonBenefitRole/cdm:RoleOfPartyReference/@s:ref][1]/cdm:ContactAddress/nc:LocationAddress/nc:StructuredAddress/nc:LocationStreet/nc:StreetExtensionText
+FormI821D,I821DPart2Q2aResidence1City,/lis:LockboxIntakeService/cdm:PartyContactAddressAssociation[@type = 'HOME'][cdm:PartyReference/@s:ref = /lis:LockboxIntakeService/i821d:FormI821D/cdm:PersonBenefitRole/cdm:RoleOfPartyReference/@s:ref][1]/cdm:ContactAddress/nc:LocationAddress/nc:StructuredAddress/nc:LocationCityName
+FormI821D,I821DPart2Q2aResidence1State,/lis:LockboxIntakeService/cdm:PartyContactAddressAssociation[@type = 'HOME'][cdm:PartyReference/@s:ref = /lis:LockboxIntakeService/i821d:FormI821D/cdm:PersonBenefitRole/cdm:RoleOfPartyReference/@s:ref][1]/cdm:ContactAddress/nc:LocationAddress/nc:StructuredAddress/nc:LocationStateName
+FormI821D,I821DPart2Q2aResidence1ZIPCode,/lis:LockboxIntakeService/cdm:PartyContactAddressAssociation[@type = 'HOME'][cdm:PartyReference/@s:ref = /lis:LockboxIntakeService/i821d:FormI821D/cdm:PersonBenefitRole/cdm:RoleOfPartyReference/@s:ref][1]/cdm:ContactAddress/nc:LocationAddress/nc:StructuredAddress/nc:LocationPostalCode
+FormI821D,I821DPart2Q3aResidence1FromDate,//cdm:PartyContactAddressAssociation[@type = 'HOME_PREVIOUS'][cdm:PartyReference/@s:ref=//i821d:FormI821D/cdm:PersonBenefitRole/cdm:RoleOfPartyReference/@s:ref][1]/cdm:DateRange/nc:StartDate/nc:Date
+FormI821D,I821DPart2Q3aResidence1ToDate,//cdm:PartyContactAddressAssociation[@type = 'HOME_PREVIOUS'][cdm:PartyReference/@s:ref=//i821d:FormI821D/cdm:PersonBenefitRole/cdm:RoleOfPartyReference/@s:ref][1]/cdm:DateRange/nc:EndDate/nc:Date
+FormI821D,I821DPart2Q3aResidence1Address,//cdm:PartyContactAddressAssociation[@type = 'HOME_PREVIOUS'][cdm:PartyReference/@s:ref = //i821d:FormI821D/cdm:PersonBenefitRole/cdm:RoleOfPartyReference/@s:ref][1]/cdm:ContactAddress/nc:LocationAddress/nc:StructuredAddress/nc:LocationStreet/nc:StreetName
+FormI821D,I821DPart2Q3aResidence1Apt,//cdm:PartyContactAddressAssociation[@type = 'HOME_PREVIOUS'][cdm:PartyReference/@s:ref = //i821d:FormI821D/cdm:PersonBenefitRole/cdm:RoleOfPartyReference/@s:ref][1]/cdm:ContactAddress/nc:LocationAddress/nc:StructuredAddress/nc:LocationStreet/nc:StreetExtensionText
+FormI821D,I821DPart2Q3aResidence1City,/lis:LockboxIntakeService/cdm:PartyContactAddressAssociation[@type = 'HOME_PREVIOUS'][cdm:PartyReference/@s:ref = /lis:LockboxIntakeService/i821d:FormI821D/cdm:PersonBenefitRole/cdm:RoleOfPartyReference/@s:ref][1]/cdm:ContactAddress/nc:LocationAddress/nc:StructuredAddress/nc:LocationCityName
+FormI821D,I821DPart2Q3aResidence1State,/lis:LockboxIntakeService/cdm:PartyContactAddressAssociation[@type = 'HOME_PREVIOUS'][cdm:PartyReference/@s:ref = /lis:LockboxIntakeService/i821d:FormI821D/cdm:PersonBenefitRole/cdm:RoleOfPartyReference/@s:ref][1]/cdm:ContactAddress/nc:LocationAddress/nc:StructuredAddress/nc:LocationStateName
+FormI821D,I821DPart2Q3aResidence1ZIPCode,/lis:LockboxIntakeService/cdm:PartyContactAddressAssociation[@type = 'HOME_PREVIOUS'][cdm:PartyReference/@s:ref = /lis:LockboxIntakeService/i821d:FormI821D/cdm:PersonBenefitRole/cdm:RoleOfPartyReference/@s:ref][1]/cdm:ContactAddress/nc:LocationAddress/nc:StructuredAddress/nc:LocationPostalCode
+FormI821D,I821DPart2Q4aResidence1FromDate,//cdm:PartyContactAddressAssociation[@type = 'HOME_PREVIOUS'][cdm:PartyReference/@s:ref=//i821d:FormI821D/cdm:PersonBenefitRole/cdm:RoleOfPartyReference/@s:ref][2]/cdm:DateRange/nc:StartDate/nc:Date
+FormI821D,I821DPart2Q4aResidence1ToDate,//cdm:PartyContactAddressAssociation[@type = 'HOME_PREVIOUS'][cdm:PartyReference/@s:ref=//i821d:FormI821D/cdm:PersonBenefitRole/cdm:RoleOfPartyReference/@s:ref][2]/cdm:DateRange/nc:EndDate/nc:Date
+FormI821D,I821DPart2Q4aResidence1Address,//cdm:PartyContactAddressAssociation[@type = 'HOME_PREVIOUS'][cdm:PartyReference/@s:ref = //i821d:FormI821D/cdm:PersonBenefitRole/cdm:RoleOfPartyReference/@s:ref][2]/cdm:ContactAddress/nc:LocationAddress/nc:StructuredAddress/nc:LocationStreet/nc:StreetName
+FormI821D,I821DPart2Q4aResidence1Apt,//cdm:PartyContactAddressAssociation[@type = 'HOME_PREVIOUS'][cdm:PartyReference/@s:ref = //i821d:FormI821D/cdm:PersonBenefitRole/cdm:RoleOfPartyReference/@s:ref][2]/cdm:ContactAddress/nc:LocationAddress/nc:StructuredAddress/nc:LocationStreet/nc:StreetExtensionText
+FormI821D,I821DPart2Q4aResidence1City,/lis:LockboxIntakeService/cdm:PartyContactAddressAssociation[@type = 'HOME_PREVIOUS'][cdm:PartyReference/@s:ref = /lis:LockboxIntakeService/i821d:FormI821D/cdm:PersonBenefitRole/cdm:RoleOfPartyReference/@s:ref][2]/cdm:ContactAddress/nc:LocationAddress/nc:StructuredAddress/nc:LocationCityName
+FormI821D,I821DPart2Q4aResidence1State,/lis:LockboxIntakeService/cdm:PartyContactAddressAssociation[@type = 'HOME_PREVIOUS'][cdm:PartyReference/@s:ref = /lis:LockboxIntakeService/i821d:FormI821D/cdm:PersonBenefitRole/cdm:RoleOfPartyReference/@s:ref][2]/cdm:ContactAddress/nc:LocationAddress/nc:StructuredAddress/nc:LocationStateName
+FormI821D,I821DPart2Q4aResidence1ZIPCode,/lis:LockboxIntakeService/cdm:PartyContactAddressAssociation[@type = 'HOME_PREVIOUS'][cdm:PartyReference/@s:ref = /lis:LockboxIntakeService/i821d:FormI821D/cdm:PersonBenefitRole/cdm:RoleOfPartyReference/@s:ref][2]/cdm:ContactAddress/nc:LocationAddress/nc:StructuredAddress/nc:LocationPostalCode
+FormI821D,I821DPart2Q5aResidence1FromDate,//cdm:PartyContactAddressAssociation[@type = 'HOME_PREVIOUS'][cdm:PartyReference/@s:ref=//i821d:FormI821D/cdm:PersonBenefitRole/cdm:RoleOfPartyReference/@s:ref][3]/cdm:DateRange/nc:StartDate/nc:Date
+FormI821D,I821DPart2Q5aResidence1ToDate,//cdm:PartyContactAddressAssociation[@type = 'HOME_PREVIOUS'][cdm:PartyReference/@s:ref=//i821d:FormI821D/cdm:PersonBenefitRole/cdm:RoleOfPartyReference/@s:ref][3]/cdm:DateRange/nc:EndDate/nc:Date
+FormI821D,I821DPart2Q5aResidence1Address,//cdm:PartyContactAddressAssociation[@type = 'HOME_PREVIOUS'][cdm:PartyReference/@s:ref = //i821d:FormI821D/cdm:PersonBenefitRole/cdm:RoleOfPartyReference/@s:ref][3]/cdm:ContactAddress/nc:LocationAddress/nc:StructuredAddress/nc:LocationStreet/nc:StreetName
+FormI821D,I821DPart2Q5aResidence1Apt,//cdm:PartyContactAddressAssociation[@type = 'HOME_PREVIOUS'][cdm:PartyReference/@s:ref = //i821d:FormI821D/cdm:PersonBenefitRole/cdm:RoleOfPartyReference/@s:ref][3]/cdm:ContactAddress/nc:LocationAddress/nc:StructuredAddress/nc:LocationStreet/nc:StreetExtensionText
+FormI821D,I821DPart2Q5aResidence1City,/lis:LockboxIntakeService/cdm:PartyContactAddressAssociation[@type = 'HOME_PREVIOUS'][cdm:PartyReference/@s:ref = /lis:LockboxIntakeService/i821d:FormI821D/cdm:PersonBenefitRole/cdm:RoleOfPartyReference/@s:ref][3]/cdm:ContactAddress/nc:LocationAddress/nc:StructuredAddress/nc:LocationCityName
+FormI821D,I821DPart2Q5aResidence1State,/lis:LockboxIntakeService/cdm:PartyContactAddressAssociation[@type = 'HOME_PREVIOUS'][cdm:PartyReference/@s:ref = /lis:LockboxIntakeService/i821d:FormI821D/cdm:PersonBenefitRole/cdm:RoleOfPartyReference/@s:ref][3]/cdm:ContactAddress/nc:LocationAddress/nc:StructuredAddress/nc:LocationStateName
+FormI821D,I821DPart2Q5aResidence1ZIPCode,/lis:LockboxIntakeService/cdm:PartyContactAddressAssociation[@type = 'HOME_PREVIOUS'][cdm:PartyReference/@s:ref = /lis:LockboxIntakeService/i821d:FormI821D/cdm:PersonBenefitRole/cdm:RoleOfPartyReference/@s:ref][3]/cdm:ContactAddress/nc:LocationAddress/nc:StructuredAddress/nc:LocationPostalCode
+FormI821D,I821DPart2Q8AdvanceParoleYes,/lis:LockboxIntakeService/cdm:Person[@s:id = /lis:LockboxIntakeService/i821d:FormI821D/cdm:PersonBenefitRole/cdm:RoleOfPartyReference/@s:ref]/cdm:leftUSWithoutAdvanceParole201401/cdm:ResponseYesIndicator
+FormI821D,I821DPart2Q8AdvanceParoleNo,/lis:LockboxIntakeService/cdm:Person[@s:id = /lis:LockboxIntakeService/i821d:FormI821D/cdm:PersonBenefitRole/cdm:RoleOfPartyReference/@s:ref]/cdm:leftUSWithoutAdvanceParole201401/cdm:ResponseNoIndicator
+FormI821D,I821DPart2Q9aPassportCountry,/lis:LockboxIntakeService/cdm:PersonCountryAssociation[cdm:AlienRole/cdm:RoleOfPartyReference/@s:ref = /lis:LockboxIntakeService/i821d:FormI821D/cdm:PersonBenefitRole/cdm:RoleOfPartyReference/@s:ref]/cdm:AlienRole/cdm:AlienCitizenship/cdm:AlienPassport/cdm:PassportIssuingCountry/nc:LocationAddress/nc:StructuredAddress[1]/nc:LocationCountryName[1]
+FormI821D,I821DPart2Q9bPassportNumber,/lis:LockboxIntakeService/cdm:PersonCountryAssociation[cdm:AlienRole/cdm:RoleOfPartyReference/@s:ref = /lis:LockboxIntakeService/i821d:FormI821D/cdm:PersonBenefitRole/cdm:RoleOfPartyReference/@s:ref]/cdm:AlienRole/cdm:AlienCitizenship/cdm:AlienPassport/cdm:PassportNumberIdentification/nc:IdentificationID
+FormI821D,I821DPart2Q9cPassportExpiration,/lis:LockboxIntakeService/cdm:PersonCountryAssociation[cdm:AlienRole/cdm:RoleOfPartyReference/@s:ref = /lis:LockboxIntakeService/i821d:FormI821D/cdm:PersonBenefitRole/cdm:RoleOfPartyReference/@s:ref]/cdm:AlienRole/cdm:AlienCitizenship/cdm:AlienPassport/cdm:PassportNumberIdentification/nc:IdentificationExpirationDate/nc:Date
+FormI821D,I821DPart2Q10BorderCrossingCardNumber,/lis:LockboxIntakeService/cdm:Person[@s:id = /lis:LockboxIntakeService/i821d:FormI821D/cdm:PersonBenefitRole/cdm:RoleOfPartyReference/@s:ref]/cdm:BorderCrossingCardNumber/nc:IdentificationID
+FormI821D,RequestorSignatureDate,//i821d:FormI821D/cdm:DocumentApplicantSignatureDate/nc:Date
+FormI821D,RequestorLanguageFluency,//i821d:FormI821D/cdm:ApplicantLanguageUsed
+FormI821D,RequestorCanReadEnglishIndicator,//i821d:FormI821D/cdm:ApplicantReadFormIndicator
+FormI821D,InterpreterReadFormToMeIndicator,//i821d:FormI821D/cdm:InterpreterReadFormIndicator
+FormI821D,ArrivedBeforeAge16Yes,//i821d:FormI821D/i821d:AlienEstablishedResidenceBefore16/cdm:ResponseYesIndicator
+FormI821D,ArrivedBeforeAge16No,//i821d:FormI821D/i821d:AlienEstablishedResidenceBefore16/cdm:ResponseNoIndicator
+FormI821D,DateInitialEntry,//cdm:PersonCountryAssociation[1][cdm:AlienRole/cdm:RoleOfPartyReference/@s:ref = '${Applicant Reference}']/cdm:AlienRole/im:AdmissionIdentification/nc:IdentificationEffectiveDate/nc:Date
+FormI821D,PlaceInitialEntry,//cdm:PersonCountryAssociation[1][cdm:AlienRole/cdm:RoleOfPartyReference/@s:ref = '${Applicant Reference}']/cdm:AlienRole/im:AdmissionIdentification/nc:IdentificationJurisdictionText
+FormI821D,ImmigrationStatus,//cdm:PersonCountryAssociation[cdm:AlienRole/cdm:RoleOfPartyReference/@s:ref = '${Applicant Reference}']/cdm:AlienRole/im:AdmissionIdentification/nc:IdentificationStatus/nc:StatusText
+FormI821D,IssuedArrivalDepartureRecordYes,//cdm:PersonCountryAssociation[cdm:AlienRole/cdm:RoleOfPartyReference/@s:ref = '${Applicant Reference}']/cdm:EverIssuedArrivalDepartureRecord/cdm:ResponseYesIndicator
+FormI821D,IssuedArrivalDepartureRecordNo,//cdm:PersonCountryAssociation[cdm:AlienRole/cdm:RoleOfPartyReference/@s:ref = '${Applicant Reference}']/cdm:EverIssuedArrivalDepartureRecord/cdm:ResponseNoIndicator
+FormI821D,ArrivalDepartureNumber,//cdm:PersonCountryAssociation[1][cdm:AlienRole/cdm:RoleOfPartyReference/@s:ref = '${Applicant Reference}']/cdm:AlienRole/im:AdmissionIdentification/nc:IdentificationID
+FormI821D,ArrivalDepartureDate,//cdm:PersonCountryAssociation[1][cdm:AlienRole/cdm:RoleOfPartyReference/@s:ref = '${Applicant Reference}']/cdm:AlienRole/im:AdmissionIdentification/nc:IdentificationExpirationDate/nc:Date
+FormI821D,EducationGuideline,//i821d:CurrentEducationStatus/cdm:ResponseDescriptionText
+FormI821D,EducationPlace,//cdm:PartyContactAddressAssociation[@s:id=//cdm:Organization[@s:id=//cdm:PersonStudentSchoolAssociation[cdm:StudentRole/cdm:RoleOfPartyReference/@s:ref=//i821d:FormI821D/cdm:PersonBenefitRole/cdm:RoleOfPartyReference/@s:ref]/cdm:SchoolRole/cdm:RoleOfPartyReference/@s:ref]/cdm:PartyContactAddressAssociationReference /@s:ref ]/cdm:ContactAddress/nc:LocationAddress/nc:AddressFullText
+FormI821D,GraduationDate,//cdm:PersonStudentSchoolAssociation[cdm:StudentRole/cdm:RoleOfPartyReference/@s:ref = '${Applicant Reference}']/cdm:StudentGraduationDate/nc:Date
+FormI821D,MemberOfMilitaryYes,//cdm:Person[@s:id='${Applicant Reference}']/cdm:PersonServedUSArmedForces/cdm:ResponseYesIndicator
+FormI821D,MemberOfMilitaryNo,//cdm:Person[@s:id='${Applicant Reference}']/cdm:PersonServedUSArmedForces/cdm:ResponseNoIndicator
+FormI821D,MilitaryBranch,//cdm:PersonMilitaryService/cdm:MilitaryBranch
+FormI821D,ServiceStartDate,//cdm:PersonMilitaryService/cdm:DateRange/nc:StartDate/nc:Date
+FormI821D,DischargeDate,//cdm:PersonMilitaryService/cdm:DateRange/nc:EndDate/nc:Date
+FormI821D,TypeOfDischarge,//cdm:PersonMilitaryService/cdm:MilitaryDischargeType
+FormI821D,I821DFormRevisionDate,//i821d:FormI821D/cdm:DocumentTemplateVersionText
+FormI90,I90FormRevisionDate,//i90:FormI90/cdm:DocumentTemplateVersionText
+FormI821,I821FormRevisionDate,//i821:FormI821/cdm:DocumentTemplateVersionText
+FormI765,I765P1Q18,//i765:FormI765/nc:DocumentIdentification[nc:IdentificationCategoryDescriptionText='H1B_SPOUSE_I797_RECEIPT_NBR']/nc:IdentificationID
+FormI765,I765P1Q20,//cdm:PartyContactAddressAssociation[@type = 'HOME'][cdm:PartyReference/@s:ref = //i765:FormI765/cdm:DocumentCreatorReference/@s:ref]/cdm:ContactAddress/nc:LocationAddress/nc:AddressFullText
+FormI821D,I821DAdditionalInfoIndicator,//i821d:FormI821D/i821d:AdditionalInformationPresentIndicator
+FormI765,Applicant State Of Birth,//cdm:Person[@s:id = '${Applicant Reference}']/nc:PersonBirthLocation/nc:LocationAddress/nc:StructuredAddress/nc:LocationStateName
+FormI765,i765OtherGivenName,//cdm:Person[@s:id='APPLICANT1_CURRENTSPOUSE_PERSON']/cdm:PersonName[@nc:personNameCommentText='OTHER_NAME']/nc:PersonGivenName
+FormI765,i765OtherPersonName,//cdm:Person[@s:id='APPLICANT1_CURRENTSPOUSE_PERSON']/cdm:PersonName[@nc:personNameCommentText='OTHER_NAME']/nc:PersonSurName
+FormI765,i765Other1GivenName,//cdm:Person[@s:id='APPLICANT1_CURRENTSPOUSE_PERSON']/cdm:PersonName[@nc:personNameCommentText='OTHER_NAME_1']/nc:PersonGivenName
+FormI765,i765Other1PersonName,//cdm:Person[@s:id='APPLICANT1_CURRENTSPOUSE_PERSON']/cdm:PersonName[@nc:personNameCommentText='OTHER_NAME_1']/nc:PersonSurName
+FormI765,i765Other2GivenName,//cdm:Person[@s:id='APPLICANT1_CURRENTSPOUSE_PERSON']/cdm:PersonName[@nc:personNameCommentText='OTHER_NAME_2']/nc:PersonGivenName
+FormI765,i765Other2PersonName,//cdm:Person[@s:id='APPLICANT1_CURRENTSPOUSE_PERSON']/cdm:PersonName[@nc:personNameCommentText='OTHER_NAME_2']/nc:PersonSurName
