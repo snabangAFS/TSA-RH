@@ -1,0 +1,1156 @@
+DELETED FROM N400APISteps.java
+	@Then("(?i)^the adjudicator submits a (.*) for disposition record \\(API\\)$")
+	public void theAdjudicatorSubmitsDQ() throws JSONException {
+		String caseId = (String) Serenity.sessionVariableCalled("caseId");
+		executeQuickRequest(CaseTasksEndpointsQuickRequests.getTasks(caseId));
+		String taskId = retrieveValue("[?(@.taskTypeDesc == 'Resolve Security Checks' && @.taskStatusDesc == 'Review Backend TECS Hit Check')].userTaskId");
+		executeQuickRequest(
+				ResolveSecurityCheckTaskQuickRequests
+						.dQCaseWithComments(taskId)).then().assertThat()
+				.statusCode(200);
+	}
+DELETED FROM I90CaseReviewByAdjudicatorSteps.java
+@Then("(?i)^the adjudicator verifies all PDFs open$")
+	public void theAdjudicatorVerifiesAllPDFsOpen(){	
+		noticesModule.testPDFLinks();
+	}
+DELETED FROM I90CaseReviewByClerkSteps.java
+		@Then("(?i)^the clerk verifies payment has been collected$")
+	public void theClerkVerifiesPaymentCollected(){
+		Assert.assertTrue("Form fee has not been collected", paymentModule.isFormFeePaid());
+		Assert.assertTrue("Biometric fee has not been collected", paymentModule.isBiometricFeePaid());
+	}
+DELETED FROM N400APISteps.java
+	@And("(?i)^completes the validate eligibility task \\(API\\)$")
+	public void completeTheValidateEligibilityReasonTask() throws JSONException {
+		List<QuickRequestAsserter> assertions = new ArrayList<QuickRequestAsserter>();
+		assertions.add(new JSONKeyAsserter(
+				"[?(@.taskTypeDesc == 'Validate Eligibility Reason')]"));
+		repeatQuickRequest(CaseTasksEndpointsQuickRequests.getTasks(Serenity
+				.sessionVariableCalled("caseId").toString()), assertions, 300,
+				10);
+
+		String taskId = retrieveValue("[?(@.taskTypeDesc == 'Validate Eligibility Reason' && @.taskStatusDesc == 'Pending')].userTaskId");
+		executeQuickRequest(
+				EligibilityControllerQuickRequests
+						.completeBaseEligibility(taskId)).then().assertThat()
+				.statusCode(200);
+
+	}
+DELETED FROM I90CaseReviewByClerkSteps.java
+@When("(?i)^the clerk views the \"([^\"]*)\" module$")
+	public void theClerkViewsTheCaseSummary(String module){
+		//TODO: for now assuming that everything is expanded; may not always be the case
+	}
+DELETED FROM SupervisorMyTeamAPILibrary.java
+	@Then("(?i)the supervisor can add and remove available work locations for each team member \\(API\\)$")
+	public void theSupervisorCanAddAndRemoveWorkLocationsForTeamMembers() throws JSONException {
+		executeQuickRequest(MyTeamQuickRequests.getMyTeam())
+			.then().assertThat().statusCode(200);
+		
+		List<Integer> userIds = getResponse().body().jsonPath().getList("id");
+		for(Integer userId : userIds){
+			executeQuickRequest(MyTeamQuickRequests.addWorkLocationToUser("DEN", userId)).then()
+				.assertThat().statusCode(200);
+			executeQuickRequest(MyTeamQuickRequests.addWorkLocationToUser("RIT", userId)).then()
+				.assertThat().statusCode(200);
+			
+			executeQuickRequest(MyTeamQuickRequests.removeWorkLocationFromUser("DEN", userId)).then()
+				.assertThat().statusCode(200);
+			executeQuickRequest(MyTeamQuickRequests.removeWorkLocationFromUser("RIT", userId)).then()
+				.assertThat().statusCode(200);
+		}
+	}
+	DELETED FROM IVCaseReviewByDataEntryClerkSteps.java
+	@Then("(?i)^the data entry clerk verifies the case action history$")
+	public void theDataEntryClerkVerifiesCaseActionHistory() {
+		ImmigrantUser immigrant = Serenity.sessionVariableCalled("immigrant");
+		ImmigrantVisaSummaryEndpointsQuickRequests.returnImmigrantData(immigrant.ReceiptNumber);
+		List<QuickRequestAsserter> assertions = new ArrayList<QuickRequestAsserter>();
+		assertions.add(new JSONKeyAsserter("[?(@.actionDescription=='Visa Issuance Data Received')]"));
+		Serenity.setSessionVariable("caseId").to(retrieveValue("caseId"));;
+		String caseId = Serenity.sessionVariableCalled("caseId").toString();
+		assertions.add(new JSONKeyAsserter("[?(@.actionDescription=='Visa Issuance Data Received')]"));
+		assertions.add(new JSONKeyAsserter("[?(@.actionDescription=='Risk and Fraud Check Initiated')]"));
+		assertions.add(new JSONKeyAsserter("[?(@.actionDescription=='Case Accepted')]"));
+		assertions.add(new JSONKeyAsserter("[?(@.actionDescription=='Response to Lockbox Sent')]"));
+		repeatQuickRequest(CaseActionHistoryQuickRequests.getHistory(caseId), assertions, 300, 10);
+	}
+	DELETED FROM I90CaseReviewByClerkSteps.java
+	@Then("(?i)^the clerk verifies all PDFs open$")
+	public void theClerkVerifiesAllPDFsOpen(){
+		noticesModule.testPDFLinks();
+	}
+	DELETED FROM AdjudicatorMyCasesAPILibrary.java
+	@When("(?i)^the adjudicator assigns to self the parent and child \\(API\\)$")
+	public void theAdjudicatorAssignsDACAParentAndChildToSelf(){
+		executeQuickRequest(CaseManagementEndpointsQuickRequests.assignToSelf(new Long(11), (Long) Serenity.sessionVariableCalled("parentCaseId")));
+		executeQuickRequest(CaseManagementEndpointsQuickRequests.assignToSelf(new Long(11), (Long) Serenity.sessionVariableCalled("childCaseId")));
+		executeQuickRequest(RetrieveCaseOverviewDataEndpointsQuickRequests.retrieveCaseOverviewDataByOwner());
+		
+	}
+	DELETED FROM I90CaseReviewByClerkSteps.java	
+	@When("(?i)^the clerk adds a name$")
+	public void theClerkAddsAName(){
+		namesModule.addName(addedFirstName, addedLastName, "02/02/1982");
+	}
+	
+	DELETED FROM I90CaseReviewByAdjudicatorSteps.java
+		@Then("(?i)^verify updated information are displayed$")
+	public void theAdjudicatorsEditedInformationAppear() {
+		if (!biometricSummaryModule.isPhotographPresent())
+			Assert.fail();
+		if (!biometricSummaryModule.isSignaturePresent())
+			Assert.fail();
+		if (!biometricSummaryModule.isFingerprintPresent())
+			Assert.fail();
+
+		Assert.assertTrue("Matching address not found",
+				contactsModule.hasContact("4400 University Drive"));
+		Assert.assertTrue("Matching phone number not found", 
+				contactsModule.hasContact("(555) 555-5555"));
+		Assert.assertTrue("Matching e-mail not found", 
+				contactsModule.hasContact("george.mason@gmu.edu"));
+		Assert.assertTrue("Matching father's given name not found", 
+				biographicsModule.hasFathersGivenName("Donald"));	
+		Assert.assertTrue("Matching mother's given name not found", 
+				biographicsModule.hasMothersGivenName("Caroline"));	
+		Assert.assertTrue("Matching alien number not found", 
+				alienNumberModule.hasAlienNumber("A123456789"));	
+		Assert.assertTrue("Matching name not found", 
+				namesModule.hasName(TestDataUtils.getFirstName(), TestDataUtils.getLastName()));
+		Assert.assertTrue("Matching name not found", 
+				namesModule.hasName(TestDataUtils.getNewFirstName(), TestDataUtils.getNewLastName()));
+		Assert.assertTrue("Matching date of birth not found", 
+				dobModule.hasDateOfBirth("02/02/1982"));
+		Assert.assertTrue("Matching alien number not found",
+				alienNumberModule.hasAlienNumber("A12345678"));
+	}
+	DELETED FROM EditBiometricInfoAPILibrary.java
+	@Then("(?i)^the user refreshes the biometrics \\(API\\)$")
+	public void refreshesTheBiometrics() throws JSONException, EncoderException {
+		
+		String deptOfStateId = Serenity.sessionVariableCalled("deptOfStateId");
+		String aNumber = Serenity.sessionVariableCalled("aNumber");
+		String receiptNumber = Serenity.sessionVariableCalled("IVReceiptNumber");
+		
+		JSONObject immigrantJSON = new JSONObject();
+		
+		immigrantJSON.put("alienNum", aNumber);
+		immigrantJSON.put("deptOfStateCaseId", deptOfStateId);
+		immigrantJSON.put("ioeReceiptNum", receiptNumber);
+		immigrantJSON.put("transactionCntrlId", "");
+
+		createSession(LoginEndpointQuickRequests.internalAppLogin(Credentials.getCredentialsByUsername("data entry clerk").getUsername(), Credentials.getCredentialsByUsername("data entry clerk").getPassword()));
+		
+		executeQuickRequest(RetrieveBiometricsEndpointsQuickRequests.retrieveBiometrics(immigrantJSON));
+		
+		Assert.assertTrue(getResponse().statusCode() == 200);
+		
+	}
+	DELETED FROM ExternalUserLoginSteps.java
+	@Then("(?i)^the user can begin filling out the I90 form$")
+	public void theUserCanBeginFillingOutTheI90Form() {
+		Assert.assertTrue(externalAppHomepage.hasNewCaseButton());
+	}
+	DELETED FROM I90CaseReviewByAdjudicatorSteps.java
+	@When("(?i)^the adjudicator advances the case to ready for adjudication$")
+	public void whenTheAdjudicatorAdvancesTheCaseToReadyForAdjudication() {
+		openCasePage.proceedToAdjudication();
+	}
+	DELETED FROM I90CaseReviewByAdjudicatorSteps.java
+		@Then("(?i)^the case substatus is (\\w+)$")
+	public void thenTheCaseSubstatusIs(String caseSubstatus) {
+		Assert.assertTrue("Error: Case Substatus did not match "
+				+ caseSubstatus,
+				openCasePage.getCaseSubstatus().equals(caseSubstatus));
+	}
+	DELETED FROM I90CaseReviewByClerkSteps.java
+	@Then("(?i)^the clerk adds a date of birth$")
+	public void theClerkAddsADateOfBirth(){
+		dobModule.addDateOfBirth(addedDateOfBirth, true, "save");
+	}
+	DELETED FROM LockboxAPILibrary.java
+	@Then("(?i)^the parent and child substatus will be '(.*)' \\(API\\)$")
+	public void parentAndChildSubstatusChanged(String substatus)
+			throws ClassNotFoundException, SQLException, JSONException {
+		List<QuickRequestAsserter> assertions = new ArrayList<QuickRequestAsserter>();
+		assertions.add(new HTTPAsserter(200));
+		assertions.add(new JSONKeyValueAsserter(".uscisNumber", Serenity
+				.sessionVariableCalled("uniqueReceiptNumber821D").toString()));
+		assertions.add(new JSONKeyValueAsserter(".caseSubStatus", substatus));
+		repeatQuickRequest(
+				CaseSummaryControllerQuickRequests.getCaseSummary(Serenity
+						.sessionVariableCalled("uniqueReceiptNumber821D")
+						.toString()), assertions, 300, 5);
+		Serenity.setSessionVariable("parentCaseId").to(
+				new Long(retrieveValue(".caseId")));
+		assertions = new ArrayList<QuickRequestAsserter>();
+		assertions.add(new HTTPAsserter(200));
+		assertions.add(new JSONKeyValueAsserter(".uscisNumber", Serenity
+				.sessionVariableCalled("uniqueReceiptNumber765").toString()));
+		assertions.add(new JSONKeyValueAsserter(".caseSubStatus", substatus));
+		repeatQuickRequest(
+				CaseSummaryControllerQuickRequests.getCaseSummary(Serenity
+						.sessionVariableCalled("uniqueReceiptNumber765")
+						.toString()), assertions, 300, 5);
+		Serenity.setSessionVariable("childCaseId").to(
+				new Long(retrieveValue(".caseId")));
+	}
+	DELETED FROM I90CaseReviewByAdjudicatorSteps.java	
+	@Then("(?i)^the adjudicator is directed to the my cases page$")
+	public void thenTheAdjudicatorIsDirectedToTheMyCasesPage() {
+		myCasesPage.containsText("Case Related Tasks");
+	}
+	DELETED FROM ExternalI90ApplicantSteps.java
+	@When("(?i)^the applicant accepts the conditions$")
+	public void acceptConditions() {
+		externalI90AcceptPage.clickContinue();
+	}
+	DELETED FROM I90CaseReviewByAdjudicatorSteps.java
+	@When("(?i)^the adjudicator adds a name with date of birth$")
+	public void whenTheAdjudicatorAddsName(){
+		namesModule.addName(TestDataUtils.getNewFirstName(), TestDataUtils.getNewLastName(), "04/04/1984");
+	}
+	DELETED FROM I90CaseReviewByClerkSteps.java	
+	@Then("(?i)^the clerk can view the uploaded evidence document$")
+	public void theClerkCanViewTheUploadedEvidenceDocument(){
+		evidenceModule.openUploadedEvidenceDocument();
+	}
+	DELETED FROM LockboxAPILibrary.java
+		@Given("(?i)^lockbox has submitted a new case \\(API\\)$")
+	public void lockboxSubmitsANewCase() throws Throwable {
+		String uniqueReceiptNumber821D = LockboxReceiptNumberGenerator
+				.generateLockboxReceiptNumber();
+		String uniqueReceiptNumber765 = LockboxReceiptNumberGenerator
+				.generateLockboxReceiptNumber();
+		ReceiptASCII.printReceiptASCII("I821D", "I765 ",
+				uniqueReceiptNumber821D, uniqueReceiptNumber765);
+
+		Serenity.setSessionVariable("uniqueReceiptNumber821D").to(
+				uniqueReceiptNumber821D);
+		Serenity.setSessionVariable("uniqueReceiptNumber765").to(
+				uniqueReceiptNumber765);
+
+		String request = LockboxQuickRequests.createLockboxCase(
+				uniqueReceiptNumber821D, uniqueReceiptNumber765, "Jose",
+				"Cruz", "05/26/1992", "A785634210", 2);
+		executeQuickRequest(
+				LockboxQuickRequests.submit("single-i821dWithi765initial-lite",
+						request, false)).then().assertThat().statusCode(200);
+
+		verifyOperationalization(uniqueReceiptNumber821D);
+		verifyOperationalization(uniqueReceiptNumber765);
+	}
+	DELETED FROM I90CaseReviewByAdjudicatorSteps.java	
+	@Then("(?i)^the adjudicator verifies payment has been collected$")
+	public void theAdjudicatorVerifiesPaymentCollected(){
+		Assert.assertTrue("Form fee has not been collected", paymentModule.isFormFeePaid());
+		Assert.assertTrue("Biometric fee has not been collected", paymentModule.isBiometricFeePaid());
+	}
+	DELETED FROM N400APISteps.java
+	@Then("(?i)^verifies Biometrics appointments for No Show status \\(API\\)$")
+	public void verifiesBiometricsAppointmentsForNoShowStatus()
+			throws Throwable {
+		executeQuickRequest(
+				CaseTasksEndpointsQuickRequests.getAppointmentsTask(Serenity
+						.sessionVariableCalled("receiptNumber").toString()))
+				.then().assertThat().statusCode(200);
+
+		List<QuickRequestAsserter> assertions = new ArrayList<QuickRequestAsserter>();
+		assertions.add(new JSONKeyValueAsserter(".appointmentType", "0"));
+		assertions.add(new JSONKeyValueAsserter(".appointmentStatus", "2"));
+
+	}
+	DELETED FROM I90CaseReviewByClerkSteps.java
+	@When("(?i)^the clerk adds biographic data$")
+	public void theClerkAddsBiographicData(){
+		biographicsModule.updateMothersGivenName(mothersGivenName);
+	}
+	DELETED FROM ExternalUserLoginSteps.java
+	@Given("(?i)^the user is on the External App sign in page$")
+	public void theUserIsOnTheExternalAppSignInPage() {		
+		if ((System.getProperty("external.host").contains("8080"))) {
+			externalAppSignInPage.open();
+		} else {
+			System.setProperty("webdriver.base.url", System.getProperty("external.host"));
+			System.out.println("Changing base.url to : " + System.getProperty("webdriver.base.url"));
+			externalAppSignInPage.openAt(System.getProperty("webdriver.base.url"));
+		}
+	}
+	DELETED FROM I90CaseReviewByAdjudicatorSteps.java
+	@Then("(?i)^the case state is (\\w+)$")
+	public void thenTheCaseStateIs(String caseState) {
+		Assert.assertTrue("Error: Case State did not match " + caseState,
+				openCasePage.getCaseState().equals(caseState));
+	}
+	DELETED FROM N400CaseReviewSteps.java
+			@Then("(?i)^the adjudicator goes to upload an evidence document$")
+	public void theAdjudicatorGoesToUploadAnEvidenceDocument() throws Throwable {
+		openCasePage.expandAllSections();
+		evidenceModule.uploadEvidenceDocument();
+	}
+	DELETED FROM ExternalUserLoginSteps.java
+	@Then("(?i)^the user is not signed in$")
+	public void theUserIsGivenAnAuthenticationError() {
+		boolean hasError = externalAppErrorPage
+				.getMessages()
+				.get(0)
+				.contains(
+						"A system error occurred while trying to log in to USCIS ELIS");
+		Assert.assertTrue(hasError);
+	}
+	DELETED FROM I90CaseReviewByAdjudicatorSteps.java
+	@When("(?i)^expands all account and case sections$")
+	public void expandsAllAccountAndCaseSections() {
+		openCasePage.expandAllSections();
+	}
+	DELETED FROM I90CaseReviewByAdjudicatorSteps.java
+	@When("(?i)^the adjudicator edits biographics information$")
+	public void whenTheAdjudicatorEditsTheBiographics() {
+		openCasePage.expandAllSections();
+		biographicsModule.updateBiographicsInfo("Donald", "Caroline", "Female", "Norway");
+	}
+	DELETED FROM I90CaseReviewByAdjudicatorSteps.java	
+	@When("(?i)^the adjudicator adds an alien number$")
+	public void whenTheAdjudicatorAddsAlienNumber() {
+		alienNumberModule.addAlienNumber("A123456789");
+	}
+	DELETED FROM I90CaseReviewByAdjudicatorSteps.java	
+	@Then("(?i)^the adjudicator adds a date of birth$")
+	public void whenTheAdjudicatorAddsDateOfBirth(){
+		dobModule.addDateOfBirth("02/02/1982", true, "save");
+	}
+	DELETED FROM I90CaseReviewByClerkSteps.java
+	@Then("(?i)^the clerk can upload an evidence document$")
+	public void theClerkCanUploadAnEvidenceDocument(){
+		evidenceModule.uploadDocument();
+	}
+	DELETED FROM I90CaseReviewByAdjudicatorSteps.java
+	@Then("(?i)^the complete case action history is present$")
+	public void theEUTCaseActionHistoryIsPresent() {
+		openCasePage.viewCaseHistory();
+		openCasePage.waitForProcessing();
+
+		historyModule.display100Entries();
+		
+		Assert.assertTrue("Error: Case Action History data not present - Approval Case Decision Rendered",
+				historyModule.caseActionHistoryContains("Approval Case Decision Rendered"));
+		
+		Assert.assertTrue("Error: Case Action History data not present - Proceed to Adjudication",
+				historyModule.caseActionHistoryContains("Proceed to Adjudication"));
+		
+		Assert.assertTrue("Error: Case Action History data not present - Document Uploaded to Case",
+				historyModule.caseActionHistoryContains("Document Uploaded to Case"));
+		
+		Assert.assertTrue("Error: Case Action History data not present - Date of Birth Change",
+				historyModule.caseActionHistoryContains("Date of Birth Change"));
+		
+		Assert.assertTrue("Error: Case Action History data not present - Name Added",
+				historyModule.caseActionHistoryContains("Name Added"));
+		
+		Assert.assertTrue("Error: Case Action History data not present - A Number Change",
+				historyModule.caseActionHistoryContains("A Number Change"));
+		
+		Assert.assertTrue("Error: Case Action History data not present - Case Ownership Changed",
+				historyModule.caseActionHistoryContains("Case Ownership Changed"));
+		
+		Assert.assertTrue("Error: Case Action History data not present - Case Data Change",
+				historyModule.caseActionHistoryContains("Case Data Change"));
+		
+		Assert.assertTrue("Error: Case Action History data not present - Receipt Notice Sent",
+				historyModule.caseActionHistoryContains("Receipt Notice Sent"));
+		
+		Assert.assertTrue("Error: Case Action History data not present - Contact Type - Email",
+				historyModule.caseActionHistoryContains("Contact Type - Email"));
+		
+		Assert.assertTrue("Error: Case Action History data not present - Contact Type - Address",
+				historyModule.caseActionHistoryContains("Contact Type - Address"));
+		
+		Assert.assertTrue("Error: Case Action History data not present - Contact Type - Phone",
+				historyModule.caseActionHistoryContains("Contact Type - Phone"));
+		
+		Assert.assertTrue("Error: Case Action History data not present - Appointment Requested",
+				historyModule.caseActionHistoryContains("Appointment Requested"));
+		
+		Assert.assertTrue("Error: Case Action History data not present - Appointment Completed",
+				historyModule.caseActionHistoryContains("Appointment Completed"));
+		
+		Assert.assertTrue("Error: Case Action History data not present - Ready for Pre-Adjudication",
+				historyModule.caseActionHistoryContains("Ready for Pre-Adjudication"));
+		
+		openCasePage.viewCaseDetails();
+		openCasePage.waitForProcessing();
+	}
+	DELETED FROM FormI90ByRepresentativeSteps.java
+	@When("(?i)^the representative fills out the I-90 form with evidence$")
+	 public void fillsOutTheIFormWithEvidence() {
+		 I90FormData i90Data = (I90FormData) Serenity.sessionVariableCalled("I90Data");
+	     i90FormPage.acceptWelcomeMessage();
+	     i90FormPage.enterApplicantStatus(i90Data.getStatusData());
+	     i90FormPage.selectLegalNameChanged(false);
+	     i90FormPage.selectPhysicalSameAsMailing(true);
+	     i90FormPage.enterAdditionalInformation(i90Data.getAdditionalData());
+	     i90FormPage.enterBiographicalInformation(i90Data.getBiographicData());
+	     i90FormPage.continueToEvidenceUpload();
+	     i90EvidenceUploadPage.uploadEvidenceDocument(DocumentType.OTHER);
+	     i90EvidenceUploadPage.continueToReview();
+	     if (!g28ReviewPage.isG28PDFVisible()) {
+	    	 Assert.fail("Error: I-frame containing G28 PDF is not visible!");
+	     }
+	     g28ReviewPage.continueOn();
+	     g28RepESignPage.markAttestationStatementAsRead();
+	     g28RepESignPage.esign(i90RepData.getFullName().getAppendedName());
+	     g28RepESignPage.proceedToReviewI90Application();
+	     if (!i90ReviewPage.isI90PDFVisible()) {
+	    	 Assert.fail("Error: I-frame containing I-90 PDF is not visible!");
+	     }
+	     i90ReviewPage.continueToAttestation();
+	     i90AttestationPage.continueToESign();
+	     repESignG28AndI90Page.checkPreparedApplicationForClient();
+	     repESignG28AndI90Page.esign(i90RepData.getFullName().getAppendedName());
+	     repESignG28AndI90Page.submitG28AndI90ForClientReview();
+	     Serenity.setSessionVariable("Passcode").to(repConfirmationAndPasscodeGenPage.getPasscode());
+	 }
+	 DELTED CLASS ExternalUserLoginSteps.java plus external package in gov.dhs.uscis.elis2.serenity.bdd.steps
+	 package gov.dhs.uscis.elis2.serenity.bdd.steps.external;
+
+import gov.dhs.uscis.elis2.serenity.bdd.pages.elis.externalApp.ExternalAppErrorPage;
+import gov.dhs.uscis.elis2.serenity.bdd.pages.elis.externalApp.ExternalAppHomePage;
+import gov.dhs.uscis.elis2.serenity.bdd.pages.elis.externalApp.ExternalAppSignInPage;
+import gov.dhs.uscis.elis2.serenity.data.Credentials;
+import gov.dhs.uscis.elis2.serenity.data.DefaultCredentials;
+
+import org.junit.Assert;
+
+import cucumber.api.java.en.Given;
+import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
+
+public class ExternalUserLoginSteps {
+	ExternalAppSignInPage externalAppSignInPage;
+	ExternalAppHomePage externalAppHomepage;
+	ExternalAppErrorPage externalAppErrorPage;
+
+	@When("(?i)^the user signs in with (\\w+) credentials$")
+	public void theUserignsInWithValidCredentials(String valid) {
+		Credentials creds = DefaultCredentials.getInvalidCredentials();
+		if (valid.toLowerCase().equals("valid"))
+			creds = DefaultCredentials.getValidCredentials();
+		externalAppSignInPage.signIn(creds);
+		Assert.assertTrue("Login to external app failed!", externalAppHomepage.isLoggedIn());
+	}
+}
+	DELETED FROM N400APISteps.java
+	@When("^completes the Conduct Interview task \\(API\\)$")
+	public void completesTheConductInterviewTask() throws Throwable {
+		executeQuickRequest(
+				AppointmentServicesEndpointsQuickRequests
+						.completeInterview(Serenity.sessionVariableCalled(
+								"caseId").toString())).then().assertThat()
+				.statusCode(200);
+	}
+	DELETED FROM I90CaseReviewByAdjudicatorSteps.java
+	@Then("(?i)^previously entered case summary information is viewable$")
+	public void previouslyEnteredCaseSumamryInformationIsViewable(){
+		Assert.assertTrue("Testing legal name change fields", caseSummaryModule.isNameLegallyChanged());
+		Assert.assertTrue("Testing accommodation requested", caseSummaryModule.isAccommodationRequested());
+		Assert.assertTrue("Testing ordered removed from US", caseSummaryModule.isOrderedRemovedFromUS());
+		Assert.assertTrue("Testing abandonded", caseSummaryModule.hasAbandoned());
+		Assert.assertEquals("Testing date of admission", caseSummaryModule.getDateOfAdmission(), new SimpleDateFormat("MM/dd/yyyy").format(TestDataUtils.getI90FormData().getAdditionalData().getDateOfAdmission()));
+	}
+	DELETED FROM EditApplicantContactInfoAPILibrary.java
+	@Then("(?i)^the address will have successfully been added to the applicant contact info \\(API\\)$")
+	public void theAddressWasSuccesfullyAddedToApplicantContactInfo(){
+		Response response = Serenity.sessionVariableCalled("response");
+		Assert.assertEquals(200, response.getStatusCode());
+		Assert.assertEquals("2500 Rock Ave, Rockville, MD, 20852, USA", JsonSearchUtil.customJsonPath(response.body().asString(), "primaryAddressMailing").toString().trim());
+	}
+	DELETED FROM EditApplicantContactInfoAPILibrary.java	
+	@Then("(?i)^the email will have successfully been added to the applicant contact info \\(API\\)$")
+	public void theEmailWasSuccesfullyAddedToApplicantContactInfo(){
+		executeQuickRequest(ContactsControllerQuickRequests.getContacts(Serenity.sessionVariableCalled("personId").toString()));
+		Assert.assertEquals(200, getResponse().getStatusCode());
+		Assert.assertEquals("bob.smith@google.com", retrieveValue("primaryEmail"));
+	}
+	DELETED FROM ESBMessageLibrary.java
+	@When("^a Visa Issuance is received for an immigrant$")
+	 public void visaIssuanceReceived() throws Throwable {
+		ImmigrantUser immigrant = Serenity.sessionVariableCalled("immigrant");
+		IVTestMessageGenerator message = new IVTestMessageGenerator("IR1");
+		Serenity.setSessionVariable("message").to(message);
+		message.associateImmigrantToTestMessage(immigrant);
+		message.sendVisaIssuance();
+	 }
+	 DELETED FROM ApplicantHomeAPILibrary.java
+	 	@When("(?i)^the applicant selects the form I90 \\(API\\)$")
+	public void theApplicantSelectsAForm(){
+		executeQuickRequest(BenefitsFilingDecisionControllerQuickRequests.getFilingDecision("I-90"));
+		Assert.assertTrue(new Boolean(retrieveValue(".actionAllowable")));
+	}
+	DELETED FROM ApplicantHomeAPILibrary.java
+	@Then("(?i)^the applicant will have a Receipt Number \\(API\\)$")
+	public void theReceiptNumberGenerated(){
+		List<QuickRequestAsserter> assertions = new ArrayList<QuickRequestAsserter>();
+		assertions.add(new JSONKeyAsserter(".receiptNumber"));
+		repeatQuickRequest(CustomerHomeControllerQuickRequests.getUserMessages(), assertions, 300, 1);
+		Serenity.setSessionVariable("receiptNumber").to(retrieveValue(".[?(@.messageTitle == 'Receipt Notice')].receiptNumber"));
+	}
+	DELETED FROM ClerkMyCasesAPILibrary.java
+	@When("(?i)^the clerk requests (\\d+) cases of I90 work Ready for Pre-adjudication \\(API\\)$")
+	public void theUserRequestsPreAdjudicationWork(int numCases) throws JSONException{
+		executeQuickRequest(RetrieveCaseOverviewDataEndpointsQuickRequests.getMoreWork("012", null, 1));
+		Serenity.setSessionVariable("response").to(getResponse());
+	}
+	DELETED FROM ClerkMyCasesAPILibrary.java
+	@When("(?i)^the clerk retrieves applicant case information \\(API\\)$")
+	public void theUserRequestsForCaseSummaryInfo() throws JSONException{	
+		executeQuickRequest(CaseSummaryControllerQuickRequests.getCaseSummary(Serenity.sessionVariableCalled("receiptNumber").toString()));
+		Serenity.setSessionVariable("personId").to(retrieveValue("personId").toString());
+	}
+	DELETED FROM EditBiometricInfoAPILibrary.java
+	@Then("(?i)^the name will have successfully been added to the applicants info \\(API\\)$")
+	public void theNameSuccesfullyAddedToApplicantInfo(){
+		executeQuickRequest(NamesControllerQuickRequests.getNames(Serenity.sessionVariableCalled("caseId").toString(), Serenity.sessionVariableCalled("personId").toString()));
+		Assert.assertEquals("mike", retrieveValue("primaryFirstName").toLowerCase());
+		Assert.assertEquals("price", retrieveValue("primaryLastName").toLowerCase());
+		Assert.assertEquals("nmn", retrieveValue("primaryMiddleName").toLowerCase());
+	}
+	DELETED FROM ClerkMyCasesAPILibrary.java
+	@When("(?i)^the clerk advances the advances the applicant to Ready for Adjudication \\(API\\)$")
+	public void theUserAdvancesTheApplicantToAdjudication() throws NumberFormatException, JSONException{
+		executeQuickRequest(CaseSummaryControllerQuickRequests.getActivitiesOnCase(Serenity.sessionVariableCalled("caseId").toString()));
+		Assert.assertEquals(200, getResponse().getStatusCode());
+		executeQuickRequest(CompleteActivityOnCaseEndpointsQuickRequests.completeActivityOnCase(new Long(retrieveValue("[0].activityId"))));
+		Assert.assertEquals(200, getResponse().getStatusCode());
+	}
+	DELETED FROM EditBiometricInfoAPILibrary.java
+	@Then("(?i)^the alien number will be successfully added to the applicants info \\(API\\)$")
+	public void theAlienNumberSuccesfullyAddedToApplicantInfo(){
+		executeQuickRequest(AlienNumberControllerQuickRequests.getAlienNumbers(Serenity.sessionVariableCalled("personId").toString()));
+		Assert.assertEquals("000000009", retrieveValue("primaryAlienNumber"));
+		Assert.assertEquals("Y", retrieveValue("alienNumberDataList[?(@.alienNumber == '000000009')].primaryInd"));
+		Assert.assertEquals("000000009", retrieveValue("alienNumberDataList[?(@.alienNumber == '000000009')].alienNumber"));
+		Assert.assertEquals("INTERNAL", retrieveValue("alienNumberDataList[?(@.alienNumber == '000000009')].sourceType"));
+		Assert.assertEquals("01/01/1975", retrieveValue("alienNumberDataList[?(@.alienNumber == '000000009')].startDate"));
+	}
+	DELETED FROM FormI90APILibrary.java	
+	@When("(?i)^the applicant esigns the application \\(API\\)$")
+	public void theApplicantEsignsTheApplication() throws JSONException{
+		JSONObject esignJSON = new JSONObject();
+		esignJSON.put("ipAddress", "");
+		esignJSON.put("browserInformation","");
+		esignJSON.put("esignedLegalName", "Christopher Rogers");
+		esignJSON.put("attestationReviewedIndicator", true);
+		esignJSON.put("englishVerifyIndicator", true);
+		esignJSON.put("interpreterVerifyIndicator", false);
+		esignJSON.put("preparerVerifyIndicator", false);
+		esignJSON.put("applicationId", Serenity.sessionVariableCalled("applicationId").toString());
+
+		executeQuickRequest(FormI90WizardControllerQuickRequests.verify(esignJSON));
+		Serenity.setSessionVariable("response").to(getResponse());
+	}
+	DELETED FROM AdjudicatorMyCasesAPILibrary.java
+	@When("(?i)^the adjudicator approves and finalizes decision on the applicant \\(API\\)$")
+	public void theAdjudicatorApprovesTheApplicant() throws JSONException{
+		executeQuickRequest(RenderDecisionControllerQuickRequests.getCaseDecisionView(Serenity.sessionVariableCalled("caseId").toString(), Serenity.sessionVariableCalled("personId").toString()));
+		JSONObject renderDecisionJSON = new JSONObject();
+		renderDecisionJSON.put("caseId", Serenity.sessionVariableCalled("caseId").toString());
+		renderDecisionJSON.put("personId", Serenity.sessionVariableCalled("personId").toString());
+		renderDecisionJSON.put("firstName", retrieveValue("firstName"));
+		renderDecisionJSON.put("lastName", retrieveValue("lastName"));
+		renderDecisionJSON.put("middleName", retrieveValue("middleName"));
+		renderDecisionJSON.put("noFirstNameInd", "N");
+		renderDecisionJSON.put("noMiddleNameInd", "N");
+		renderDecisionJSON.put("uscisNo", Serenity.sessionVariableCalled("receiptNumber").toString());
+		renderDecisionJSON.put("category", "S17");
+		renderDecisionJSON.put("gender", 1);
+		renderDecisionJSON.put("cob", retrieveValue("cob"));
+		renderDecisionJSON.put("dob", retrieveValue("dob"));
+		renderDecisionJSON.put("alienNumber", retrieveValue("alienNumber"));
+		renderDecisionJSON.put("appReasonCode", 1);
+		renderDecisionJSON.put("appType", 1);
+		renderDecisionJSON.put("benefitTypeCode", 1);
+		renderDecisionJSON.put("caseEligibilityDetailId", retrieveValue("caseEligibilityDetailId"));
+		renderDecisionJSON.put("renderDecision", 1);
+		renderDecisionJSON.put("activityId", retrieveValue("activityId"));
+		renderDecisionJSON.put("adjudicatorId", 11);
+		renderDecisionJSON.put("caseAssignedToId", 11);
+		renderDecisionJSON.put("currentUserId", 11);
+		renderDecisionJSON.put("supervisorReviewCode", "N");
+		renderDecisionJSON.put("forceSupReview", "false");
+		renderDecisionJSON.put("hasAccessToRenderDecision", "true");
+		renderDecisionJSON.put("primaryNameId", retrieveValue("primaryNameId"));
+		renderDecisionJSON.put("primaryNameVersion", retrieveValue("primaryNameVersion"));
+		renderDecisionJSON.put("auditId", retrieveValue("auditId"));
+		renderDecisionJSON.put("residentSince", retrieveValue("residentSince"));
+		executeQuickRequest(RenderDecisionControllerQuickRequests.saveOrFinalizeDecision(renderDecisionJSON, Serenity.sessionVariableCalled("caseId").toString(), Serenity.sessionVariableCalled("personId").toString()));
+	
+		renderDecisionJSON.put("caseRenderDecisionId", retrieveValue("caseRenderDecisionId"));
+		renderDecisionJSON.put("isCaseDecCompleted", true);
+		renderDecisionJSON.put("caseDecisionStatus", 3);
+		renderDecisionJSON.put("renderDecisionOrig", 1);
+		renderDecisionJSON.put("supervisorReviewCode", "N");
+		renderDecisionJSON.put("decisionNoticeDesc", "No");
+		renderDecisionJSON.put("decisionNoticeCode", "N");
+		renderDecisionJSON.put("decisionRenderInd", "N");
+		renderDecisionJSON.put("denyInd", "N");
+		executeQuickRequest(RenderDecisionControllerQuickRequests.saveOrFinalizeDecision(renderDecisionJSON, Serenity.sessionVariableCalled("caseId").toString(), Serenity.sessionVariableCalled("personId").toString()));
+	}
+	DELETED FROM ViewApplicantsProfileAPILibrary.java
+	@Then("(?i)^the adjudicator validates the applicants profile \\(API\\)$")
+	public void adjudicatorValidatesTheApplicantsProfile() throws JSONException{
+		executeQuickRequest(CaseControllerQuickRequests.getCaseDetails(Serenity.sessionVariableCalled("caseId").toString()));
+		Assert.assertEquals(200, getResponse().getStatusCode());
+		Assert.assertEquals("365", retrieveValue("filingFee"));
+		Assert.assertEquals("85", retrieveValue("biometricFee"));
+		
+		executeQuickRequest(CaseControllerQuickRequests.getCaseSummary(Serenity.sessionVariableCalled("caseId").toString(), Serenity.sessionVariableCalled("personId").toString()));
+		JSONObject biometricsJSON = new JSONObject();
+		biometricsJSON.put("idNum", Serenity.sessionVariableCalled("receiptNumber").toString());
+		biometricsJSON.put("dob", retrieveValue("dob"));
+		biometricsJSON.put("givenName", "MIKE");
+		biometricsJSON.put("familyName", "PRICE");
+		biometricsJSON.put("caseId", Serenity.sessionVariableCalled("caseId").toString());
+		biometricsJSON.put("alienNum", "000000009");
+		executeQuickRequest(CardProductionEndpointsQuickRequests.retrieveCardProductionDataByReceiptNumber(biometricsJSON));
+		Assert.assertEquals(200, getResponse().getStatusCode());
+		Assert.assertEquals("RI", retrieveValue("fingerPosition"));
+		Assert.assertFalse(getResponse().jsonPath().getBoolean("fingerPrintWaived"));
+		Assert.assertNotNull(getResponse().jsonPath().get("tcn"));
+		Assert.assertNotNull(getResponse().jsonPath().get("signatureWaived"));
+		Assert.assertNotNull(getResponse().jsonPath().get("biometricCaptureDate"));
+
+		executeQuickRequest(BackgroundCheckEndpointsQuickRequests.getBackgroundCheckHeaders(Serenity.sessionVariableCalled("caseId").toString()));
+		Assert.assertEquals("CHRISTOPHER", retrieveValue("results[?(@.createdUserID != 'FIVE, CASEACCESS')].firstName"));
+		Assert.assertEquals("ROGERS", retrieveValue("results[?(@.createdUserID != 'FIVE, CASEACCESS')].lastName"));
+		Assert.assertEquals("05/26/1959", retrieveValue("results[?(@.createdUserID != 'FIVE, CASEACCESS')].birthDate"));	
+		
+		executeQuickRequest(FingerPrintResultsEndpointQuickRequests.getFingerPrintResults(Serenity.sessionVariableCalled("receiptNumber").toString()));		
+		Assert.assertEquals("Ident/Hit", retrieveValue("fingerPrintResults[0].fngrPrntRsltCd"));
+		Assert.assertEquals("1234567890", retrieveValue("fingerPrintResults[0].ucn"));
+		Serenity.setSessionVariable("trn").to(retrieveValue("fingerPrintResults[0].trn"));
+		
+		executeQuickRequest(RapSheetControllerQuickRequests.retrieveRAPSheetByTCN(Serenity.sessionVariableCalled("trn").toString()));
+		Assert.assertEquals(200, getResponse().getStatusCode());
+		Assert.assertTrue(getResponse().asString().contains("FEDERAL BUREAU OF INVESTIGATION"));
+	}
+	DELETED FROM EditBiometricInfoAPILibrary.java
+	@When("(?i)^the adjudicator adds a name to the applicant \\(API\\)$")
+	public void theAdjudicatorAddsANameToTheApplicant() throws JSONException{
+		executeQuickRequest(NamesControllerQuickRequests.getNames(Serenity.sessionVariableCalled("caseId").toString(), Serenity.sessionVariableCalled("personId").toString()));
+			JSONObject namesJSON = new JSONObject();
+			namesJSON.put("firstName", "Mike");
+			namesJSON.put("lastName", "Price");
+			namesJSON.put("middleName", "NMN");
+			namesJSON.put("isPrimaryInd", "Y");
+			namesJSON.put("noMiddleNameInd", "Y");
+			namesJSON.put("noFirstNameInd", "N");
+			namesJSON.put("personId", Serenity.sessionVariableCalled("personId").toString());
+			namesJSON.put("caseId", Serenity.sessionVariableCalled("caseId").toString());
+			namesJSON.put("personNameUsageCode", "LEGAL");
+			namesJSON.put("endDateStr", "");
+			namesJSON.put("startDateUnknownInd", "N");
+			namesJSON.put("endDateUnknownInd", "N");
+			namesJSON.put("manualDeletedIndicator", "false");
+			namesJSON.put("primaryId", retrieveValue("primaryId"));
+			namesJSON.put("primaryVersion", "1");
+			executeQuickRequest(NamesControllerQuickRequests.addNames(namesJSON, Serenity.sessionVariableCalled("caseId").toString(), Serenity.sessionVariableCalled("personId").toString(), new Long(retrieveValue("primaryId"))));			
+	}
+	DELETED FROM StatusCheckAPILibrary.java
+	//CHECKS STATUS AND SUBSTATUS
+	@Then("(?i)^the status and substatus for the applicant will be \"(.*)\" and \"(.*)\" \\(API\\)$")
+	public void theApplicantSubstatusSuccessfullyChanged(String status, String substatus) throws JSONException{
+		List<QuickRequestAsserter> assertions = new ArrayList<QuickRequestAsserter>();
+		assertions.add(new JSONKeyValueAsserter(".caseStatus", status));
+		assertions.add(new JSONKeyValueAsserter(".caseSubStatus", substatus));
+		repeatQuickRequest(CaseSummaryControllerQuickRequests.getCaseSummary(Serenity.sessionVariableCalled("receiptNumber").toString()), assertions, 300, 1);
+	}
+	DELETED FROM AdjudicatorMyCasesAPILibrary.java
+	@When("(?i)^the adjudicator requests (\\d+) cases of I90 work Ready for Adjudication \\(API\\)$")
+	public void theUserRequestsAdjudicationWork(int numCases) throws JSONException{
+		executeQuickRequest(RetrieveCaseOverviewDataEndpointsQuickRequests.getMoreWork("002", 4, 1));
+		Serenity.setSessionVariable("response").to(getResponse());
+	}
+	DELETED FROM FormI90APILibrary.java
+	@Then("(?i)^the applicant logs out \\(API\\)$")
+	public void theApplicantEndsTheSession(){
+		closeClientSession();
+	}
+	DELETED FROM I90CaseReviewByClerkSteps.java
+	@When("(?i)^the clerk adds an alien number$")
+	public void theClerkAddsAnAlienNumber(){
+		alienNumberModule.addAlienNumber(addedAlienNumber);
+	}
+	DELETED FROM FormI90APILibrary.java
+	@When("(?i)^the applicant submits an the I90 form \\(API\\)$")
+	public void theApplicantSelectsAndFillsInTheI90Application() throws JSONException, EncoderException{
+		//When the applicant selects the form I90 (API)
+		executeQuickRequest(BenefitsFilingDecisionControllerQuickRequests.getFilingDecision("I-90"));
+		
+		//Then the form will be actionable (API)
+		Assert.assertTrue(new Boolean(retrieveValue(".actionAllowable")));
+
+		//When the applicant fills in the I90 form and advances (API)
+		executeQuickRequest(FormI90WizardControllerQuickRequests.getFormI90Application());
+		String hashedUsername = retrieveValue("username");
+		
+		I90ApplicationJsonBuilder i90Application = I90ApplicationJsonBuilder.createDefaultApplicant(hashedUsername, null);
+		executeQuickRequest(FormI90WizardControllerQuickRequests.validateAndSave(i90Application.getApplicationJSON()));	
+		executeQuickRequest(CaseStatusSummaryControllerQuickRequests.getCombinedCaseSummary());
+		Serenity.setSessionVariable("applicationId").to(retrieveValue(".id").replace("[", "").replace("]", ""));
+		Assert.assertEquals(200, getResponse().getStatusCode());
+		
+		//And the applicant advances past Evidence Upload (API)
+		executeQuickRequest(FormI90WizardControllerQuickRequests.updateStepData(Serenity.sessionVariableCalled("applicationId").toString(), 3, "review"));
+		Assert.assertEquals(200, getResponse().getStatusCode());
+		
+		//And the applicant advances past Application Review (API)
+		executeQuickRequest(FormI90WizardControllerQuickRequests.updateStepData(Serenity.sessionVariableCalled("applicationId").toString(), 4, "attestation"));
+		Assert.assertEquals(200, getResponse().getStatusCode());
+		
+		//And the applicant advances past Attestation (API)
+		executeQuickRequest(FormI90WizardControllerQuickRequests.updateStepData(Serenity.sessionVariableCalled("applicationId").toString(), 5, "esign"));
+		Assert.assertEquals(200, getResponse().getStatusCode());
+		
+		//And the applicant esigns the application (API)
+		JSONObject esignJSON = new JSONObject();
+		esignJSON.put("ipAddress", "");
+		esignJSON.put("browserInformation","");
+		esignJSON.put("esignedLegalName", "Christopher Rogers");
+		esignJSON.put("attestationReviewedIndicator", true);
+		esignJSON.put("englishVerifyIndicator", true);
+		esignJSON.put("interpreterVerifyIndicator", false);
+		esignJSON.put("preparerVerifyIndicator", false);
+		esignJSON.put("applicationId", Serenity.sessionVariableCalled("applicationId").toString());
+
+		executeQuickRequest(FormI90WizardControllerQuickRequests.verify(esignJSON));
+		
+		//Then the applicant will have signed successfully (API)
+		Assert.assertEquals(200, getResponse().getStatusCode());		
+		Assert.assertTrue(new Boolean(retrieveValue(".success")));
+		Assert.assertFalse(new Boolean(retrieveValue(".i90ApplicationFormError")));
+		Assert.assertEquals("Authentication Successful", retrieveValue(".message"));
+	
+	}
+	DELETED FROM EditBiometricInfoAPILibrary.java
+	@When("(?i)^the adjudicator changes the applicants fathers name \\(API\\)$")
+	public void theAdjudicatorChangesTheApplicantsFathersName() throws JSONException{
+		executeQuickRequest(CaseSummaryControllerQuickRequests.getCaseSummary(Serenity.sessionVariableCalled("receiptNumber").toString()));
+		JSONObject editBioJSON = new JSONObject();
+		editBioJSON.put("cob", retrieveValue("decisionView.cob"));
+		editBioJSON.put("caseId", Serenity.sessionVariableCalled("caseId").toString());
+		editBioJSON.put("dob", retrieveValue("dob"));
+		editBioJSON.put("personId", retrieveValue("personId"));
+		editBioJSON.put("motherName", "Mom");
+		editBioJSON.put("fatherName", "Donald");
+		editBioJSON.put("prsnVersion", retrieveValue("personVersion"));
+		editBioJSON.put("caseVersion", retrieveValue("caseVersion"));
+		editBioJSON.put("genderCode", "1");
+		executeQuickRequest(AccountBiographicControllerQuickRequests.updateBiographic(editBioJSON));
+	}
+	DELETED FROM StatusCheckAPILibrary.java
+	@Then("(?i)^the applicants card will be produced \\(API\\)$")
+	public void theApplicantsCardWasProduced() throws JSONException{
+		List<QuickRequestAsserter> assertions = new ArrayList<QuickRequestAsserter>();
+		assertions.add(new JSONKeyValueAsserter(".uscisNumber", Serenity.sessionVariableCalled("receiptNumber").toString()));
+		assertions.add(new JSONKeyValueAsserter(".caseSubStatus", "Card Produced"));
+		repeatQuickRequest(CaseSummaryControllerQuickRequests.getCaseSummary(Serenity.sessionVariableCalled("receiptNumber").toString()), assertions, 500, 5);
+	}
+	DELETED CLASS ViewApplicantsProfileAPILibrary.java, package gov.dhs.uscis.elis2.serenity.bdd.steps.api.internal
+	package gov.dhs.uscis.elis2.serenity.bdd.steps.api.internal;
+
+import org.junit.Assert;
+
+import wslite.json.JSONArray;
+import wslite.json.JSONException;
+import wslite.json.JSONObject;
+
+
+import net.serenitybdd.core.Serenity;
+import cucumber.api.java.en.Then;
+import gov.dhs.uscis.elis2.serenity.bdd.api.quickrequests.internal.BackgroundCheckEndpointsQuickRequests;
+import gov.dhs.uscis.elis2.serenity.bdd.api.quickrequests.internal.CardProductionEndpointsQuickRequests;
+import gov.dhs.uscis.elis2.serenity.bdd.api.quickrequests.internal.CaseActionHistoryQuickRequests;
+import gov.dhs.uscis.elis2.serenity.bdd.api.quickrequests.internal.CaseActivityEndpointsQuickRequests;
+import gov.dhs.uscis.elis2.serenity.bdd.api.quickrequests.internal.CaseControllerQuickRequests;
+import gov.dhs.uscis.elis2.serenity.bdd.api.quickrequests.internal.CaseHistoryEndpointsQuickRequests;
+import gov.dhs.uscis.elis2.serenity.bdd.api.quickrequests.internal.FingerPrintResultsEndpointQuickRequests;
+import gov.dhs.uscis.elis2.serenity.bdd.api.quickrequests.internal.RapSheetControllerQuickRequests;
+import gov.dhs.uscis.elis2.serenity.bdd.steps.api.BaseAPILibrary;
+import gov.dhs.uscis.elis2.serenity.utils.api.JsonSearchUtil;
+
+public class ViewApplicantsProfileAPILibrary extends BaseAPILibrary{
+
+	private static final long serialVersionUID = -8101328096131926354L;
+
+	@Then("(?i)^the adjudicator validates the applicants history table \\(API\\)$")
+	public void theAdjudicatorValidatesApplicantsHistoryTable() throws JSONException{
+		executeQuickRequest(CaseActionHistoryQuickRequests.getHistory(Serenity.sessionVariableCalled("caseId").toString()));
+		Assert.assertEquals(200, getResponse().getStatusCode());
+		Assert.assertEquals("Case Data Change", retrieveValue("[?(@.actionDescription == 'Case Data Change' && @.caseSubstatusDescription == 'Ready For Adjudication')].actionDescription"));
+		Assert.assertEquals("Ready For Adjudication", retrieveValue("[?(@.actionDescription == 'Case Data Change' && @.caseSubstatusDescription == 'Ready For Adjudication')].caseSubstatusDescription"));
+	
+		executeQuickRequest(CaseActivityEndpointsQuickRequests.fetchCaseActivityHistoryByCaseId(Serenity.sessionVariableCalled("caseId").toString()));
+		Assert.assertEquals(200, getResponse().getStatusCode());
+		JSONArray json = new JSONArray(JsonSearchUtil.customJsonPath(retrieveValue(".[?(@.caseActivityType.activityTypeCode== 7 && @.caseActivitySubType.activitySubtypeCode== 54)]"), ".activityTypeDescription").toString());
+		Assert.assertEquals("Conduct Security/Sys Check", json.get(0));
+		json = new JSONArray(JsonSearchUtil.customJsonPath(retrieveValue(".[?(@.caseActivityType.activityTypeCode== 7 && @.caseActivitySubType.activitySubtypeCode== 54)]"), ".activitySubtypeDescription").toString());
+		Assert.assertEquals("Security Check Results", json.get(0));
+		
+		executeQuickRequest(CaseHistoryEndpointsQuickRequests.getCaseDataHistoryDetails(Serenity.sessionVariableCalled("caseId").toString()));
+		Assert.assertEquals(200, getResponse().getStatusCode());
+		Assert.assertEquals("Father's First Name: Dad", retrieveValue("[?(@.changeField == 'Parent\\'s Name')].changeDescription"));
+	}
+	
+}
+DELETED FROM EditApplicantContactInfoAPILibrary.java
+@Then("(?i)^the phone number will have successfully been added to the applicant contact info \\(API\\)$")
+	public void thePhoneNumberWasSuccesfullyAddedToApplicantContactInfo(){
+		Response response = Serenity.sessionVariableCalled("response");
+		Assert.assertEquals(200, response.getStatusCode());
+		Assert.assertEquals("(222) 222-2222", retrieveValue("contactDataList[?(@.fullPhone == '(222) 222-2222')].contactDetails"));
+		
+	}
+	DELETED FROM EditBiometricInfoAPILibrary.java
+	@Then("(?i)^the adjudicator successfully changed the applicants fathers name \\(API\\)$")
+	public void theAdjudicatorSuccessfullyChangesTheApplicantsFathersName() throws JSONException{
+		executeQuickRequest(CaseSummaryControllerQuickRequests.getCaseSummary(Serenity.sessionVariableCalled("receiptNumber").toString()));
+		Assert.assertEquals("Donald", retrieveValue("fatherName"));
+	}
+	DELETED FROM FormI90APILibrary.java
+	@When("(?i)^the applicant advances past Attestation \\(API\\)$")
+	public void advancePastAttestation() throws JSONException{
+		executeQuickRequest(FormI90WizardControllerQuickRequests.updateStepData(Serenity.sessionVariableCalled("applicationId").toString(), 5, "esign"));
+		Assert.assertEquals(200, getResponse().getStatusCode());
+	}
+	DELETED FROM ApplicantHomeAPILibrary.java
+	@When("(?i)^the applicant again selects the form (.*) \\(API\\)$")
+	public void theApplicantSelectsAUnactionableForm(String formType){
+		executeQuickRequest(BenefitsFilingDecisionControllerQuickRequests.getFilingDecision(formType));
+		Serenity.setSessionVariable("response").to(getResponse());
+	}
+	DELETED FROM FormI90APILibrary.java
+	@When("(?i)^the applicant advances past Application Review \\(API\\)$")
+	public void advancePastApplicationReview() throws JSONException{
+		executeQuickRequest(FormI90WizardControllerQuickRequests.updateStepData(Serenity.sessionVariableCalled("applicationId").toString(), 4, "attestation"));
+		Assert.assertEquals(200, getResponse().getStatusCode());
+	}
+	DELETED FROM EditApplicantContactInfoAPILibrary.java
+	@When("(?i)^the clerk adds a phone number to applicants contact info \\(API\\)$")
+	public void theUserAddsPhoneNumberToApplicant() throws JSONException{
+		JSONObject phoneJSON = new JSONObject();
+		phoneJSON.put("contactSubTypeCd", "7");
+		phoneJSON.put("phoneNumber", "2222222222");
+		phoneJSON.put("endDate", "");
+		phoneJSON.put("startDate", "");
+		phoneJSON.put("startDateUnknownIndicator", "N");
+		phoneJSON.put("endDateUnknownIndicator", "N");
+		phoneJSON.put("primaryIndicator", "N");
+		phoneJSON.put("personId", Serenity.sessionVariableCalled("personId").toString());
+		phoneJSON.put("contactTypeCd", "2");
+		phoneJSON.put("caseId", Serenity.sessionVariableCalled("caseId").toString());
+		executeQuickRequest(ContactsControllerQuickRequests.addContactPhone(phoneJSON));
+		Serenity.setSessionVariable("response").to(getResponse());
+	}
+	DELETED FROM LockboxAPILibrary.java
+		@Given("(?i)^the user creates an IV case through lockbox \\(API\\)$")
+	public void lockboxSubmitsANewIVCase() throws Throwable {
+
+		String aNumber = TestDataUtils.getIdentHitValidAlienNumber();
+		String deptOfStateId = RandomStringUtils.random(3, true, false)
+				.toUpperCase() + RandomStringUtils.random(10, false, true);
+		RestAssuredClient client = new RestAssuredClient();
+		Serenity.setSessionVariable("lockboxClient").to(client);
+
+		executeQuickRequest(
+				LockboxQuickRequests.submitIV("single-i551-body", aNumber,
+						deptOfStateId), client).then().assertThat()
+				.statusCode(200);
+
+		Serenity.setSessionVariable("deptOfStateId").to(deptOfStateId);
+		Serenity.setSessionVariable("aNumber").to(aNumber);
+
+	}
+	DELETED FROM CaseDetailsSteps.java
+		@When("(?i)^the user navigates to the \"([^\"]*)\" section \\(UI\\)$")
+	public void assignsTheConductInterviewTaskToSelfUI(String section) {
+		
+		switch(section){
+		case "Case Details":
+			openCasePage.viewCaseDetails();
+			break;
+		case "Case Tasks":
+			openCasePage.viewCaseTasks();
+			break;			
+		case "Case History":
+			openCasePage.viewCaseHistory();
+			break;		
+		default:
+			Assert.fail("Could not naviagate to tab section");
+		
+		}
+	}	
+	DELETED FROM ApplicantHomeAPILibrary.java
+	@Then("(?i)^the applicant will move to substatus '(.*)' \\(API\\)$")
+	public void theApplicantAdvancedToSubStatus(String substatus) throws JSONException{
+		List<QuickRequestAsserter> assertions = new ArrayList<QuickRequestAsserter>();
+		assertions.add(new JSONKeyValueAsserter(".receiptNumber", Serenity.sessionVariableCalled("receiptNumber").toString()));
+		assertions.add(new JSONKeyValueAsserter(".caseSubStatus.label", substatus));
+		repeatQuickRequest(CaseStatusSummaryControllerQuickRequests.getCombinedCaseSummary(), assertions, 300, 1);
+	}
+	DELETED CLASS EditBiometricInfoAPILibrary, gov.dhs.uscis.elis2.serenity.bdd.steps.api.internal
+	package gov.dhs.uscis.elis2.serenity.bdd.steps.api.internal;
+
+import gov.dhs.uscis.elis2.serenity.bdd.api.quickrequests.LoginEndpointQuickRequests;
+import gov.dhs.uscis.elis2.serenity.bdd.api.quickrequests.internal.AccountBiographicControllerQuickRequests;
+import gov.dhs.uscis.elis2.serenity.bdd.api.quickrequests.internal.AlienNumberControllerQuickRequests;
+import gov.dhs.uscis.elis2.serenity.bdd.api.quickrequests.internal.CaseSummaryControllerQuickRequests;
+import gov.dhs.uscis.elis2.serenity.bdd.api.quickrequests.internal.NamesControllerQuickRequests;
+import gov.dhs.uscis.elis2.serenity.bdd.api.quickrequests.internal.RetrieveBiometricsEndpointsQuickRequests;
+import gov.dhs.uscis.elis2.serenity.bdd.steps.api.BaseAPILibrary;
+
+import gov.dhs.uscis.elis2.serenity.data.Credentials;
+import net.serenitybdd.core.Serenity;
+
+import org.apache.commons.codec.EncoderException;
+import org.junit.Assert;
+
+import wslite.json.JSONException;
+import wslite.json.JSONObject;
+import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
+
+public class EditBiometricInfoAPILibrary extends BaseAPILibrary{
+	
+	private static final long serialVersionUID = 4858848208414960619L;
+	
+	@When("(?i)^the adjudicator adds an alien number to the applicant \\(API\\)$")
+	public void theAdjudicatorAddsAnAlienNumberToTheApplicant() throws JSONException{
+		JSONObject alienNumberJSON = new JSONObject();
+		alienNumberJSON.put("alienNumber", "A000000009");
+		alienNumberJSON.put("primaryInd", "Y");
+		alienNumberJSON.put("startDateUnknownFlag", "N");
+		alienNumberJSON.put("endDateUnknownFlag", "N");
+		alienNumberJSON.put("personId", Serenity.sessionVariableCalled("personId").toString());
+		alienNumberJSON.put("caseId", Serenity.sessionVariableCalled("caseId").toString());
+		alienNumberJSON.put("startDate", "01/01/1975");
+		alienNumberJSON.put("endDate", "01/01/2011");
+		executeQuickRequest(AlienNumberControllerQuickRequests.addAlienNumbers(alienNumberJSON));
+	}
+}
+DELETED FROM SupervisorMyTeamAPILibrary.java
+@Then("(?i)the supervisor can add and remove available work locations for each team member \\(API\\)$")
+	public void theSupervisorCanAddAndRemoveWorkLocationsForTeamMembers() throws JSONException {
+		executeQuickRequest(MyTeamQuickRequests.getMyTeam())
+			.then().assertThat().statusCode(200);
+		
+		List<Integer> userIds = getResponse().body().jsonPath().getList("id");
+		for(Integer userId : userIds){
+			executeQuickRequest(MyTeamQuickRequests.addWorkLocationToUser("DEN", userId)).then()
+				.assertThat().statusCode(200);
+			executeQuickRequest(MyTeamQuickRequests.addWorkLocationToUser("RIT", userId)).then()
+				.assertThat().statusCode(200);
+			
+			executeQuickRequest(MyTeamQuickRequests.removeWorkLocationFromUser("DEN", userId)).then()
+				.assertThat().statusCode(200);
+			executeQuickRequest(MyTeamQuickRequests.removeWorkLocationFromUser("RIT", userId)).then()
+				.assertThat().statusCode(200);
+		}
+	}
+	DELTED FROM FormI90APILibrary.java
+	@When("(?i)^the applicant advances past Evidence Upload \\(API\\)$")
+	public void advancePastEvidenceUpload() throws JSONException{
+		executeQuickRequest(FormI90WizardControllerQuickRequests.updateStepData(Serenity.sessionVariableCalled("applicationId").toString(), 3, "review"));
+		Assert.assertEquals(200, getResponse().getStatusCode());
+	}
+	DELETED FROM ApplicantHomeAPILibrary.java
+	@Then("(?i)^the applicant will have messages for Receipt Notice and Appointment Scheduled \\(API\\)$")
+	public void theApplicantsReceiptNoticeAndAppointmentScheduledGenerated(){
+		List<QuickRequestAsserter> assertions = new ArrayList<QuickRequestAsserter>();
+		assertions.add(new JSONKeyValueAsserter(".[?(@.messageTitle == 'Appointment Scheduled')].receiptNumber", Serenity.sessionVariableCalled("receiptNumber").toString()));
+		assertions.add(new JSONKeyValueAsserter(".[?(@.messageTitle == 'Receipt Notice')].receiptNumber", Serenity.sessionVariableCalled("receiptNumber").toString()));
+		repeatQuickRequest(CustomerHomeControllerQuickRequests.getUserMessages(), assertions, 300, 1);
+		Serenity.setSessionVariable("receiptNumber").to(retrieveValue(".receiptNumber"));
+		executeQuickRequest(UserHomeControllerQuickRequests.userProfileData());
+		Assert.assertEquals(200, getResponse().statusCode());
+		Serenity.setSessionVariable("accountNum").to(retrieveValue("accountNumber"));
+	}
+	DELETED CLASS ExternalUserLoginAPILibrary, gov.dhs.uscis.elis2.serenity.bdd.steps.api.external
+	package gov.dhs.uscis.elis2.serenity.bdd.steps.api.external;
+
+import gov.dhs.uscis.elis2.serenity.bdd.api.quickrequests.LoginEndpointQuickRequests;
+import gov.dhs.uscis.elis2.serenity.bdd.steps.api.BaseAPILibrary;
+import gov.dhs.uscis.elis2.serenity.data.Credentials;
+import gov.dhs.uscis.elis2.serenity.data.DefaultCredentials;
+
+import org.apache.commons.codec.EncoderException;
+
+import cucumber.api.java.en.Given;
+
+public class ExternalUserLoginAPILibrary extends BaseAPILibrary {
+
+	private static final long serialVersionUID = -2864263098478466027L;
+
+	@Given("(?i)^the applicant logs into the External App \\(API\\)$")
+	public void theUserIsOnTheExternalAppSignInPage() throws EncoderException {
+		Credentials creds = DefaultCredentials.getValidCredentials();
+		createSession(LoginEndpointQuickRequests.externalAppLogin(creds.getUsername(), creds.getPassword()));
+	}
+	
+}
+	DELETED FROM FormI90APILibrary.java
+	@Then("(?i)^the applicant will have signed successfully \\(API\\)$")
+	public void eSignatureSuccessful() throws JSONException{
+		Response response = Serenity.sessionVariableCalled("response");
+		Assert.assertEquals(200, response.statusCode());		
+		Assert.assertTrue(response.jsonPath().getBoolean("success"));
+		Assert.assertFalse(response.jsonPath().getBoolean("i90ApplicationFormError"));
+		Assert.assertEquals("Authentication Successful", response.jsonPath().getString("message"));
+	}
+	DELETED FROM EditApplicantContactInfoAPILibrary.java
+	@When("(?i)^the clerk adds an address to the applicants contact info \\(API\\)$")
+	public void theUserAddsAddressToApplicant() throws JSONException{
+		JSONObject addressJSON = new JSONObject();
+		addressJSON.put("caseId", Serenity.sessionVariableCalled("caseId").toString());
+		addressJSON.put("personId", Serenity.sessionVariableCalled("personId").toString());
+		addressJSON.put("primaryIndicator", "Y");
+		addressJSON.put("startDateUnknownIndicator", "Y");
+		addressJSON.put("endDateUnknownIndicator", "Y");
+		addressJSON.put("contactTypeCd", "1");
+		addressJSON.put("contactSubTypeCd", "1");
+		addressJSON.put("cityName", "Rockville");
+		addressJSON.put("countryCode", "USA");
+		addressJSON.put("postalZipCode", "20852");
+		addressJSON.put("stateCode", "MD");
+		addressJSON.put("streetAddress1Text", "2500 Rock Ave");	
+		executeQuickRequest(ContactsControllerQuickRequests.addContactAddress(addressJSON));
+		Serenity.setSessionVariable("response").to(getResponse());
+	}
+	DELTED CLASS FormI90APILibrary.java, gov.dhs.uscis.elis2.serenity.bdd.steps.api.external
+	package gov.dhs.uscis.elis2.serenity.bdd.steps.api.external;
+
+import gov.dhs.uscis.elis2.serenity.bdd.api.quickrequests.efile.BenefitsFilingDecisionControllerQuickRequests;
+import gov.dhs.uscis.elis2.serenity.bdd.api.quickrequests.efile.CaseStatusSummaryControllerQuickRequests;
+import gov.dhs.uscis.elis2.serenity.bdd.api.quickrequests.efile.FormI90WizardControllerQuickRequests;
+import gov.dhs.uscis.elis2.serenity.bdd.steps.api.BaseAPILibrary;
+import gov.dhs.uscis.elis2.serenity.data.utils.I90ApplicationJsonBuilder;
+import net.serenitybdd.core.Serenity;
+
+import org.apache.commons.codec.EncoderException;
+import org.junit.Assert;
+
+import wslite.json.JSONException;
+import wslite.json.JSONObject;
+
+import com.jayway.restassured.response.Response;
+
+import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
+
+public class FormI90APILibrary extends BaseAPILibrary {
+
+	private static final long serialVersionUID = -8093672622599316406L;
+		
+	@When("(?i)^the applicant fills in the I90 form and advances \\(API\\)$")
+	public void theApplicantFillsOutTheI90Form() throws JSONException{
+		executeQuickRequest(FormI90WizardControllerQuickRequests.getFormI90Application());
+		String hashedUsername = retrieveValue("username");
+		
+		I90ApplicationJsonBuilder i90Application = I90ApplicationJsonBuilder.createDefaultApplicant(hashedUsername, null);
+		executeQuickRequest(FormI90WizardControllerQuickRequests.validateAndSave(i90Application.getApplicationJSON()));	
+		executeQuickRequest(CaseStatusSummaryControllerQuickRequests.getCombinedCaseSummary());
+		Serenity.setSessionVariable("applicationId").to(retrieveValue(".id").replace("[", "").replace("]", ""));
+		Assert.assertEquals(200, getResponse().getStatusCode());
+	}	
+}
+DELETED CLASS ClerkMyCasesAPILibrary.java, gov.dhs.uscis.elis2.serenity.bdd.steps.api.internal
+package gov.dhs.uscis.elis2.serenity.bdd.steps.api.internal;
+
+import gov.dhs.uscis.elis2.serenity.bdd.api.quickrequests.internal.CaseManagementEndpointsQuickRequests;
+import gov.dhs.uscis.elis2.serenity.bdd.api.quickrequests.internal.CaseSummaryControllerQuickRequests;
+import gov.dhs.uscis.elis2.serenity.bdd.api.quickrequests.internal.CompleteActivityOnCaseEndpointsQuickRequests;
+import gov.dhs.uscis.elis2.serenity.bdd.api.quickrequests.internal.RetrieveCaseOverviewDataEndpointsQuickRequests;
+import gov.dhs.uscis.elis2.serenity.bdd.steps.api.BaseAPILibrary;
+import gov.dhs.uscis.elis2.serenity.utils.api.JsonSearchUtil;
+import net.serenitybdd.core.Serenity;
+
+import org.junit.Assert;
+
+import wslite.json.JSONException;
+
+import com.jayway.restassured.response.Response;
+
+import cucumber.api.java.en.And;
+import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
+
+public class ClerkMyCasesAPILibrary extends BaseAPILibrary{
+
+	private static final long serialVersionUID = 3055992812339336124L;
+	
+	@Then("(?i)^the clerk will successfully receive the submitted case \\(API\\)$")
+	public void theUserSuccessfullyReceivedTheCorrectCase(){
+		Response response = Serenity.sessionVariableCalled("response");
+		Assert.assertEquals(200, response.getStatusCode());
+		Assert.assertEquals(1, new Integer(retrieveValue("numberOfNewAssignments")).intValue());
+		Assert.assertEquals(Serenity.sessionVariableCalled("receiptNumber").toString(), JsonSearchUtil.customJsonPath(response.body().asString(), "caseOverviews[0].receiptNumber"));
+		Serenity.setSessionVariable("caseId").to(JsonSearchUtil.customJsonPath(response.body().asString(), "caseOverviews[0].caseId").toString());
+	}
+}
+DELETED CLASS ApplicantHomeAPILibrary, gov.dhs.uscis.elis2.serenity.bdd.steps.api.external
+package gov.dhs.uscis.elis2.serenity.bdd.steps.api.external;
+
+import gov.dhs.uscis.elis2.serenity.bdd.api.quickrequests.efile.BenefitsFilingDecisionControllerQuickRequests;
+import gov.dhs.uscis.elis2.serenity.bdd.api.quickrequests.efile.CaseStatusSummaryControllerQuickRequests;
+import gov.dhs.uscis.elis2.serenity.bdd.api.quickrequests.efile.CustomerHomeControllerQuickRequests;
+import gov.dhs.uscis.elis2.serenity.bdd.api.quickrequests.efile.UserHomeControllerQuickRequests;
+import gov.dhs.uscis.elis2.serenity.bdd.steps.api.BaseAPILibrary;
+import gov.dhs.uscis.elis2.serenity.utils.api.assertions.JSONKeyAsserter;
+import gov.dhs.uscis.elis2.serenity.utils.api.assertions.JSONKeyValueAsserter;
+import gov.dhs.uscis.elis2.serenity.utils.api.assertions.QuickRequestAsserter;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import net.serenitybdd.core.Serenity;
+
+import org.junit.Assert;
+
+import com.jayway.restassured.response.Response;
+
+import wslite.json.JSONException;
+import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
+
+public class ApplicantHomeAPILibrary extends BaseAPILibrary{
+
+	private static final long serialVersionUID = -7813509580507994365L;
+	
+	@Then("(?i)^the form will be unactionable \\(API\\)$")
+	public void theApplicantsFormIsUnactionable(){
+		Assert.assertFalse(new Boolean(retrieveValue(".actionAllowable",(Response) Serenity.sessionVariableCalled("response"))));
+	}
+}
+DELETED FROM EditApplicantContactInfoAPILibrary.java
+	@When("(?i)^the adjudicator adds an email to the applicants contact info \\(API\\)$")
+	public void theUserAddsEmailToApplicant() throws JSONException{
+		JSONObject emailJSON = new JSONObject();
+		emailJSON.put("contactSubTypeCd", "1");
+		emailJSON.put("emailAddress", "bob.smith@google.com");
+		emailJSON.put("startDateUnknownIndicator", "N");
+		emailJSON.put("endDateUnknownIndicator", "N");
+		emailJSON.put("primaryIndicator", "Y");
+		emailJSON.put("personId", Serenity.sessionVariableCalled("personId").toString());
+		emailJSON.put("contactTypeCd", "3");
+		emailJSON.put("caseId", Serenity.sessionVariableCalled("caseId").toString());
+		executeQuickRequest(ContactsControllerQuickRequests.addContactEmail(emailJSON));
+	}
+	DELETED FROM AdjudicatorMyCasesAPILibrary.java
+	@Then("(?i)^the adjudicator will successfully receive the submitted case \\(API\\)$")
+	public void theUserSuccessfullyReceivedTheCorrectCase(){
+		Response response = Serenity.sessionVariableCalled("response");
+		Assert.assertEquals(200, response.getStatusCode());
+		Assert.assertEquals(1, new Integer(retrieveValue("numberOfNewAssignments")).intValue());
+		Assert.assertEquals(Serenity.sessionVariableCalled("receiptNumber").toString(), JsonSearchUtil.customJsonPath(response.body().asString(), "caseOverviews[0].receiptNumber"));
+	}
